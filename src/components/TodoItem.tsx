@@ -86,10 +86,10 @@ export const TodoItem = ({ todo }: TodoItemProps) => {
   }
 
   return (
-    <div className="group flex items-start gap-normal p-normal hover:bg-bg-wash rounded-container transition-all duration-200">
+    <div className="group flex items-center gap-coarse p-normal hover:bg-bg-wash rounded-container transition-all duration-200">
       <button
         onClick={() => toggleTodo(todo.id)}
-        className={`mt-1 w-5 h-5 rounded-full flex items-center justify-center transition-all ${
+        className={`w-5 h-5 rounded-full flex items-center justify-center transition-all ${
           todo.completed
             ? 'bg-interactive-primary scale-110'
             : 'bg-bg-wash hover:bg-border-element hover:scale-110'
@@ -100,7 +100,7 @@ export const TodoItem = ({ todo }: TodoItemProps) => {
 
       <div className="flex-1 min-w-0">
         <p
-          className={`text-value transition-colors ${
+          className={`text-value leading-none transition-colors ${
             todo.completed ? 'line-through text-text-placeholder' : 'text-text-primary'
           }`}
         >
