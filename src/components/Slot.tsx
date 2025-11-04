@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
@@ -21,6 +21,14 @@ export const Slot = ({ slot, isEditMode }: SlotProps) => {
   const [icon, setIcon] = useState(slot.icon);
   const { updateSlot, deleteSlot } = useBookmarkStore();
   const openConfirmModal = useModalStore((state) => state.openConfirmModal);
+
+  useEffect(() => {
+    if (!isEditMode && isEditing) {
+      setIsEditing(false);
+      setName(slot.name);
+      setIcon(slot.icon);
+    }
+  }, [isEditMode, isEditing, slot.name, slot.icon]);
 
   const IconComponent = getIconComponent(slot.icon);
 
