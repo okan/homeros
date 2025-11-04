@@ -46,45 +46,56 @@ export const Link = ({ link, slotId, isEditMode }: LinkProps) => {
     }
   };
 
+  const content = (
+    <>
+      <div className="w-6 h-6 flex items-center justify-center">
+        {faviconFailed || faviconUrls.length === 0 ? (
+          <Globe className="w-4 h-4 text-icon-placeholder" />
+        ) : (
+          <img
+            src={faviconUrls[currentFaviconIndex]}
+            alt=""
+            className="w-4 h-4"
+            onError={handleFaviconError}
+          />
+        )}
+      </div>
+      <div className="flex-1 min-w-0 flex items-center gap-normal">
+        <span className="text-value text-text-primary truncate leading-none">{link.title}</span>
+        {link.description && (
+          <span className="text-value text-text-placeholder/40 truncate leading-none">
+            {link.description}
+          </span>
+        )}
+      </div>
+    </>
+  );
+
   return (
     <div
       ref={setNodeRef}
       style={style}
-      className="group flex items-center gap-normal p-normal hover:bg-bg-wash rounded-control transition-all duration-200 ease-out"
+      className="group flex items-center gap-normal rounded-control transition-all duration-200 ease-out"
     >
       {isEditMode && (
         <button
           {...attributes}
           {...listeners}
-          className="cursor-grab active:cursor-grabbing text-icon-placeholder hover:text-icon-default opacity-0 group-hover:opacity-100 transition-opacity"
+          className="cursor-grab active:cursor-grabbing text-icon-placeholder hover:text-icon-default opacity-0 group-hover:opacity-100 transition-opacity p-fine"
         >
           <GripVertical className="w-4 h-4" />
         </button>
       )}
 
-      <a href={link.url} className="flex-1 flex items-center gap-normal min-w-0">
-        <div className="w-4 h-4 flex-shrink-0 flex items-center justify-center">
-          {faviconFailed || faviconUrls.length === 0 ? (
-            <Globe className="w-4 h-4 text-icon-placeholder" />
-          ) : (
-            <img
-              src={faviconUrls[currentFaviconIndex]}
-              alt=""
-              className="w-4 h-4"
-              onError={handleFaviconError}
-            />
-          )}
-        </div>
-        <div className="flex-1 min-w-0 flex items-center gap-normal">
-          <div className="text-value text-text-primary truncate">{link.title}</div>
-          {link.description && (
-            <div className="text-accent text-text-placeholder/50 truncate">{link.description}</div>
-          )}
-        </div>
+      <a 
+        href={link.url} 
+        className="flex-1 flex items-center gap-normal min-w-0 p-fine hover:bg-bg-wash rounded-control transition-colors"
+      >
+        {content}
       </a>
 
       {isEditMode && (
-        <div className="flex gap-fine opacity-0 group-hover:opacity-100 transition-opacity">
+        <div className="flex gap-fine opacity-0 group-hover:opacity-100 transition-opacity p-fine">
           <button
             onClick={handleEdit}
             className="p-fine text-icon-placeholder hover:text-interactive-primary transition-colors"
