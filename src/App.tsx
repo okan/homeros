@@ -1,6 +1,6 @@
 import {
   DndContext,
-  closestCenter,
+  rectIntersection,
   KeyboardSensor,
   PointerSensor,
   useSensor,
@@ -11,7 +11,7 @@ import {
   arrayMove,
   SortableContext,
   sortableKeyboardCoordinates,
-  verticalListSortingStrategy,
+  rectSortingStrategy,
 } from '@dnd-kit/sortable';
 import { useBookmarkStore } from './store/useBookmarkStore';
 import { useTodoStore } from './store/useTodoStore';
@@ -130,12 +130,12 @@ function App() {
         ) : (
           <DndContext
             sensors={sensors}
-            collisionDetection={closestCenter}
+            collisionDetection={rectIntersection}
             onDragEnd={handleDragEnd}
           >
             <SortableContext
               items={slots.map((slot) => slot.id)}
-              strategy={verticalListSortingStrategy}
+              strategy={rectSortingStrategy}
             >
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-coarse">
                 {slots.map((slot) => (
