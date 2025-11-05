@@ -61,9 +61,9 @@ export const Link = ({ link, slotId, isEditMode }: LinkProps) => {
         )}
       </div>
       <div className="flex-1 min-w-0 flex items-center gap-normal">
-        <span className="text-value text-text-primary truncate leading-none">{link.title}</span>
+        <span className="text-value text-text-primary truncate">{link.title}</span>
         {link.description && (
-          <span className="text-value text-text-placeholder/40 truncate leading-none">
+          <span className="text-value text-text-placeholder/40 truncate">
             {link.description}
           </span>
         )}
