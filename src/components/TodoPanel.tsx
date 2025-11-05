@@ -9,6 +9,21 @@ export const TodoPanel = () => {
   const [newTodoDeadline, setNewTodoDeadline] = useState('');
   const [showDeadline, setShowDeadline] = useState(false);
 
+  const hasUrgentTodos = (() => {
+    const now = new Date();
+    now.setHours(0, 0, 0, 0);
+    return todos.some((t) => {
+      if (!t.deadline || t.completed) return false;
+      const d = new Date(t.deadline);
+      d.setHours(0, 0, 0, 0);
+      const diffDays = Math.ceil((d.getTime() - now.getTime()) / 86400000);
+      if (diffDays < 0) return false;
+      if (diffDays <= 1) return true;
+      if (diffDays < 3) return true;
+      return false;
+    });
+  })();
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (newTodoText.trim()) {
@@ -87,7 +102,9 @@ export const TodoPanel = () => {
                 <p className="text-value">No todos yet. Add one to get started!</p>
               </div>
             ) : (
-              todos.map((todo) => <TodoItem key={todo.id} todo={todo} />)
+              todos.map((todo) => (
+                <TodoItem key={todo.id} todo={todo} showUrgencyGutter={hasUrgentTodos} />
+              ))
             )}
           </div>
         </div>

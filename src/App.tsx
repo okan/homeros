@@ -31,7 +31,7 @@ function App() {
   useChromeStorage();
   useTodoStorage();
   const { slots, isEditMode, toggleEditMode, reorderSlots, reorderLinks } = useBookmarkStore();
-  const { toggleTodoPanel } = useTodoStore();
+  const { toggleTodoPanel, todos } = useTodoStore();
   const {
     isAddLinkModalOpen,
     addLinkSlotId,
@@ -93,6 +93,37 @@ function App() {
         >
           <ListTodo className="w-4 h-4" />
           <span className="text-value font-medium">TODOs</span>
+          {(() => {
+            const now = new Date();
+            now.setHours(0, 0, 0, 0);
+            const counts = todos.reduce(
+              (acc, t) => {
+                if (!t.deadline || t.completed) return acc;
+                const d = new Date(t.deadline);
+                d.setHours(0, 0, 0, 0);
+                const diffDays = Math.ceil((d.getTime() - now.getTime()) / 86400000);
+                if (diffDays < 0) return acc;
+                if (diffDays <= 1) acc.red += 1;
+                else if (diffDays < 3) acc.yellow += 1;
+                return acc;
+              },
+              { red: 0, yellow: 0 },
+            );
+            return (
+              <>
+                {counts.yellow > 0 && (
+                  <span className="inline-flex items-center justify-center rounded-full min-w-[18px] h-[18px] px-[6px] text-[11px] font-bold bg-yellow-500 text-white">
+                    {counts.yellow}
+                  </span>
+                )}
+                {counts.red > 0 && (
+                  <span className="inline-flex items-center justify-center rounded-full min-w-[18px] h-[18px] px-[6px] text-[11px] font-bold bg-red-500 text-white">
+                    {counts.red}
+                  </span>
+                )}
+              </>
+            );
+          })()}
         </button>
         
         <button

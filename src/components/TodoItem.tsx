@@ -5,9 +5,10 @@ import type { Todo } from '../types';
 
 interface TodoItemProps {
   todo: Todo;
+  showUrgencyGutter?: boolean;
 }
 
-export const TodoItem = ({ todo }: TodoItemProps) => {
+export const TodoItem = ({ todo, showUrgencyGutter }: TodoItemProps) => {
   const [isEditing, setIsEditing] = useState(false);
   const [editText, setEditText] = useState(todo.text);
   const [editDeadline, setEditDeadline] = useState(todo.deadline || '');
@@ -45,6 +46,25 @@ export const TodoItem = ({ todo }: TodoItemProps) => {
   };
 
   const isOverdue = todo.deadline && new Date(todo.deadline) < new Date() && !todo.completed;
+
+  const computeDiffDays = () => {
+    if (!todo.deadline) return undefined;
+    const now = new Date();
+    const d = new Date(todo.deadline);
+    now.setHours(0, 0, 0, 0);
+    d.setHours(0, 0, 0, 0);
+    return Math.ceil((d.getTime() - now.getTime()) / 86400000);
+  };
+  const diffDays = computeDiffDays();
+  const isUrgentRed = !todo.completed && diffDays !== undefined && diffDays >= 0 && diffDays <= 1;
+  const isUrgentYellow = !todo.completed && diffDays !== undefined && diffDays >= 2 && diffDays < 3;
+  const deadlineClass = isOverdue
+    ? 'text-red-500 font-medium'
+    : isUrgentRed
+    ? 'text-red-500 font-medium'
+    : isUrgentYellow
+    ? 'text-yellow-600 font-medium'
+    : 'text-text-placeholder';
 
   if (isEditing) {
     return (
@@ -86,7 +106,18 @@ export const TodoItem = ({ todo }: TodoItemProps) => {
   }
 
   return (
-    <div className="group flex items-center gap-coarse p-normal hover:bg-bg-wash rounded-container transition-all duration-200">
+    <div className={`group flex items-center gap-coarse p-normal hover:bg-bg-wash rounded-container transition-all duration-200`}>
+      {showUrgencyGutter && (
+        <div className="shrink-0 w-2 h-2 flex items-center justify-center">
+          {(isUrgentRed || isUrgentYellow) && (
+            <span
+              className={`w-2 h-2 rounded-full ${
+                isUrgentRed ? 'bg-red-500' : 'bg-yellow-500'
+              }`}
+            />
+          )}
+        </div>
+      )}
       <button
         onClick={() => toggleTodo(todo.id)}
         className={`w-5 h-5 rounded-full flex items-center justify-center transition-all ${
@@ -109,11 +140,7 @@ export const TodoItem = ({ todo }: TodoItemProps) => {
         {todo.deadline && (
           <div className="flex items-center gap-fine mt-fine">
             <Calendar className="w-3 h-3 text-icon-placeholder" />
-            <span
-              className={`text-accent ${
-                isOverdue ? 'text-red-500 font-medium' : 'text-text-placeholder'
-              }`}
-            >
+            <span className={`text-accent ${deadlineClass}`}>
               {formatDeadline(todo.deadline)}
             </span>
           </div>
