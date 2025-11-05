@@ -71,7 +71,7 @@ export const TodoItem = ({ todo }: TodoItemProps) => {
             className="flex-1 flex items-center justify-center gap-fine px-coarse py-normal bg-interactive-primary hover:bg-interactive-primary-hover active:bg-interactive-primary-active text-white rounded-control transition-colors"
           >
             <Check className="w-3 h-3" />
-            <span className="text-accent">Save</span>
+            <span className="text-value font-medium">Save</span>
           </button>
           <button
             type="button"

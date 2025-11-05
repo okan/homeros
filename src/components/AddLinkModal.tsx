@@ -60,10 +60,10 @@ export const AddLinkModal = ({ isOpen, onClose, slotId }: AddLinkModalProps) => 
         />
         <button
           type="submit"
-          className="w-full flex items-center justify-center gap-fine px-coarse py-normal bg-interactive-primary hover:bg-interactive-primary-hover active:bg-interactive-primary-active text-white rounded-control transition-colors text-accent"
+          className="w-full flex items-center justify-center gap-fine px-coarse py-normal bg-interactive-primary hover:bg-interactive-primary-hover active:bg-interactive-primary-active text-white rounded-control transition-colors"
         >
           <Check className="w-4 h-4" />
-          <span>Add Link</span>
+          <span className="text-value font-medium">Add Link</span>
         </button>
       </form>
     </Modal>
