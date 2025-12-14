@@ -26,8 +26,21 @@ import { AddLinkModal } from './components/AddLinkModal';
 import { EditLinkModal } from './components/EditLinkModal';
 import { ConfirmModal } from './components/ConfirmModal';
 import { Settings, Check, ListTodo } from 'lucide-react';
+import { useThemeStore } from './store/useThemeStore';
+import { ThemeToggle } from './components/ThemeToggle';
+import { useEffect } from 'react';
 
 function App() {
+  const { isDarkMode } = useThemeStore();
+
+  useEffect(() => {
+    if (isDarkMode) {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+  }, [isDarkMode]);
+
   useChromeStorage();
   useTodoStorage();
   const { slots, isEditMode, toggleEditMode, reorderSlots, reorderLinks } = useBookmarkStore();
@@ -85,8 +98,9 @@ function App() {
   return (
     <div className="min-h-screen bg-bg-page">
       <TodoPanel />
-      
+
       <div className="fixed top-coarse right-coarse z-50 flex items-center gap-fine">
+        <ThemeToggle />
         <button
           onClick={toggleTodoPanel}
           className="flex items-center gap-fine px-coarse py-fine rounded-control transition-all bg-transparent text-text-secondary hover:bg-bg-content hover:text-text-primary"
@@ -125,14 +139,13 @@ function App() {
             );
           })()}
         </button>
-        
+
         <button
           onClick={toggleEditMode}
-          className={`flex items-center gap-fine px-coarse py-fine rounded-control transition-all ${
-            isEditMode
+          className={`flex items-center gap-fine px-coarse py-fine rounded-control transition-all ${isEditMode
               ? 'bg-interactive-primary text-white hover:bg-interactive-primary-hover shadow-card-sm'
               : 'bg-transparent text-text-secondary hover:bg-bg-content hover:text-text-primary'
-          }`}
+            }`}
         >
           {isEditMode ? (
             <>
@@ -178,7 +191,7 @@ function App() {
           </DndContext>
         )}
       </div>
-      
+
       {addLinkSlotId && (
         <AddLinkModal
           isOpen={isAddLinkModalOpen}

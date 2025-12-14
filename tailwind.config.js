@@ -1,4 +1,5 @@
 export default {
+  darkMode: 'class',
   content: [
     "./index.html",
     "./src/**/*.{js,ts,jsx,tsx}",
@@ -6,20 +7,20 @@ export default {
   theme: {
     extend: {
       colors: {
-        'bg-page': 'rgba(242,242,242,1)',
-        'bg-content': 'rgba(255,255,255,1)',
-        'bg-wash': 'rgba(0,0,0,0.05)',
-        'text-primary': 'rgba(0,0,0,0.85)',
-        'text-secondary': 'rgba(0,0,0,0.75)',
-        'text-placeholder': 'rgba(0,0,0,0.55)',
-        'border-element': 'rgba(0,0,0,0.15)',
-        'border-divider': 'rgba(0,0,0,0.55)',
-        'interactive-primary': 'rgba(24,119,242,1)',
-        'interactive-primary-hover': 'rgba(11,94,202,1)',
-        'interactive-primary-active': 'rgba(10,83,178,1)',
-        'interactive-selected': 'rgba(24,119,242,0.1)',
-        'icon-default': 'rgba(0,0,0,0.75)',
-        'icon-placeholder': 'rgba(0,0,0,0.55)',
+        'bg-page': 'rgb(var(--bg-page) / <alpha-value>)',
+        'bg-content': 'rgb(var(--bg-content) / <alpha-value>)',
+        'bg-wash': 'rgb(var(--bg-wash) / var(--bg-wash-opacity))',
+        'text-primary': 'rgb(var(--text-primary) / var(--text-primary-opacity))',
+        'text-secondary': 'rgb(var(--text-secondary) / var(--text-secondary-opacity))',
+        'text-placeholder': 'rgb(var(--text-placeholder) / var(--text-placeholder-opacity))',
+        'border-element': 'rgb(var(--border-element) / var(--border-element-opacity))',
+        'border-divider': 'rgb(var(--border-divider) / var(--border-divider-opacity))',
+        'interactive-primary': 'rgb(var(--interactive-primary) / <alpha-value>)',
+        'interactive-primary-hover': 'rgb(var(--interactive-primary-hover) / <alpha-value>)',
+        'interactive-primary-active': 'rgb(var(--interactive-primary-active) / <alpha-value>)',
+        'interactive-selected': 'rgb(var(--interactive-selected) / var(--interactive-selected-opacity))',
+        'icon-default': 'rgb(var(--icon-default) / var(--icon-default-opacity))',
+        'icon-placeholder': 'rgb(var(--text-placeholder) / var(--text-placeholder-opacity))',
       },
       borderRadius: {
         'content': '6px',

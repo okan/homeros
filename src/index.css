@@ -2,6 +2,62 @@
 @tailwind components;
 @tailwind utilities;
 
+@layer base {
+  :root {
+    --bg-page: 242 242 242; /* #F2F2F2 */
+    --bg-content: 255 255 255; /* #FFFFFF */
+    --bg-wash: 0 0 0;
+    --bg-wash-opacity: 0.05;
+
+    --text-primary: 0 0 0;
+    --text-primary-opacity: 0.85;
+    --text-secondary: 0 0 0;
+    --text-secondary-opacity: 0.75;
+    --text-placeholder: 0 0 0;
+    --text-placeholder-opacity: 0.55;
+
+    --border-element: 0 0 0;
+    --border-element-opacity: 0.15;
+    --border-divider: 0 0 0;
+    --border-divider-opacity: 0.55;
+
+    --interactive-primary: 24 119 242; /* #1877F2 */
+    --interactive-primary-hover: 11 94 202; /* #0B5ECA */
+    --interactive-primary-active: 10 83 178; /* #0A53B2 */
+    --interactive-selected: 24 119 242;
+    --interactive-selected-opacity: 0.1;
+
+    --icon-default: 0 0 0;
+    --icon-default-opacity: 0.75;
+  }
+
+  .dark {
+    --bg-page: 20 20 20;
+    --bg-content: 30 30 30;
+    --bg-wash: 255 255 255;
+    --bg-wash-opacity: 0.05;
+
+    --text-primary: 255 255 255;
+    --text-primary-opacity: 0.9;
+    --text-secondary: 255 255 255;
+    --text-secondary-opacity: 0.7;
+    --text-placeholder: 255 255 255;
+    --text-placeholder-opacity: 0.5;
+
+    --border-element: 255 255 255;
+    --border-element-opacity: 0.1;
+    --border-divider: 255 255 255;
+    --border-divider-opacity: 0.2;
+
+    --interactive-primary: 60 140 255;
+    --interactive-primary-hover: 80 160 255;
+    --interactive-primary-active: 100 180 255;
+
+    --icon-default: 255 255 255;
+    --icon-default-opacity: 0.8;
+  }
+}
+
 @layer utilities {
   @keyframes slide-down {
     from {
