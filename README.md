@@ -10,6 +10,8 @@ A modern Chrome New Tab extension for organizing bookmarks in named slots.
 
 - 📂 Organize links in named slots
 - ✅ TODO list with deadlines
+- 🔥 Daily Habit Tracker
+- 🌓 Dark Mode support
 - 🔄 Drag & drop to reorder slots and links
 - ☁️ Chrome sync support
 
