@@ -48,7 +48,7 @@ export const TodoPanel = () => {
       )}
 
       <div
-        className={`fixed top-0 right-0 h-full w-[400px] bg-bg-page/95 backdrop-blur-md shadow-2xl transform transition-transform duration-300 ease-in-out z-[60] flex flex-col ${isTodoPanelOpen ? 'translate-x-0' : 'translate-x-full'
+        className={`fixed top-0 right-0 h-full w-[400px] glass-strong shadow-2xl transform transition-transform duration-300 ease-in-out z-[60] flex flex-col border-l border-border-element ${isTodoPanelOpen ? 'translate-x-0' : 'translate-x-full'
           }`}
       >
         <div className="p-page border-b border-border-element flex items-center justify-between">
@@ -86,7 +86,7 @@ export const TodoPanel = () => {
               <button
                 type="submit"
                 disabled={!newTodoText.trim()}
-                className="px-component py-normal bg-interactive-primary hover:bg-interactive-primary-hover active:bg-interactive-primary-active text-white rounded-control transition-colors flex items-center gap-fine disabled:opacity-50 disabled:cursor-not-allowed"
+                className="px-component py-normal bg-interactive-primary hover:bg-interactive-primary-hover active:bg-interactive-primary-active text-white rounded-control transition-colors flex items-center gap-fine disabled:opacity-50 disabled:cursor-not-allowed btn-press"
               >
                 <Plus className="w-4 h-4" />
                 <span className="text-value font-bold">Add</span>

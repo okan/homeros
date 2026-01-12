@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react';
 import {
   DndContext,
   rectIntersection,
@@ -18,6 +19,7 @@ import { useTodoStore } from './store/useTodoStore';
 import { useModalStore } from './store/useModalStore';
 import { useChromeStorage } from './hooks/useChromeStorage';
 import { useTodoStorage } from './hooks/useTodoStorage';
+import { useKeyboardShortcuts } from './hooks/useKeyboardShortcuts';
 import { Slot } from './components/Slot';
 import { AddSlotButton } from './components/AddSlotButton';
 import { EmptyState } from './components/EmptyState';
@@ -25,13 +27,14 @@ import { TodoPanel } from './components/TodoPanel';
 import { AddLinkModal } from './components/AddLinkModal';
 import { EditLinkModal } from './components/EditLinkModal';
 import { ConfirmModal } from './components/ConfirmModal';
-import { Settings, Check, ListTodo } from 'lucide-react';
+import { SearchOverlay } from './components/SearchOverlay';
+import { Settings, Check, ListTodo, Search } from 'lucide-react';
 import { useThemeStore } from './store/useThemeStore';
 import { ThemeToggle } from './components/ThemeToggle';
-import { useEffect } from 'react';
 
 function App() {
   const { isDarkMode } = useThemeStore();
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
 
   useEffect(() => {
     if (isDarkMode) {
@@ -45,6 +48,13 @@ function App() {
   useTodoStorage();
   const { slots, isEditMode, toggleEditMode, reorderSlots, reorderLinks } = useBookmarkStore();
   const { toggleTodoPanel, todos } = useTodoStore();
+
+  useKeyboardShortcuts({
+    onSearch: () => setIsSearchOpen(true),
+    onToggleEditMode: toggleEditMode,
+    onToggleTodoPanel: toggleTodoPanel,
+    onEscape: () => setIsSearchOpen(false),
+  });
   const {
     isAddLinkModalOpen,
     addLinkSlotId,
@@ -96,72 +106,88 @@ function App() {
   };
 
   return (
-    <div className="min-h-screen bg-bg-page">
+    <div className="min-h-screen">
+      <a href="#main-content" className="skip-link">
+        Skip to main content
+      </a>
+      
       <TodoPanel />
 
       <div className="fixed top-coarse right-coarse z-50 flex items-center gap-fine">
-        <ThemeToggle />
-        <button
-          onClick={toggleTodoPanel}
-          className="flex items-center gap-fine px-coarse py-fine rounded-control transition-all bg-transparent text-text-secondary hover:bg-bg-content hover:text-text-primary"
-        >
-          <ListTodo className="w-4 h-4" />
-          <span className="text-value font-medium">TODOs</span>
-          {(() => {
-            const now = new Date();
-            now.setHours(0, 0, 0, 0);
-            const counts = todos.reduce(
-              (acc, t) => {
-                if (!t.deadline || t.completed) return acc;
-                const d = new Date(t.deadline);
-                d.setHours(0, 0, 0, 0);
-                const diffDays = Math.ceil((d.getTime() - now.getTime()) / 86400000);
-                if (diffDays < 0) return acc;
-                if (diffDays <= 1) acc.red += 1;
-                else if (diffDays < 3) acc.yellow += 1;
-                return acc;
-              },
-              { red: 0, yellow: 0 },
-            );
-            return (
-              <>
-                {counts.yellow > 0 && (
-                  <span className="inline-flex items-center justify-center rounded-full min-w-[18px] h-[18px] px-[6px] text-[11px] font-bold bg-yellow-500 text-white">
-                    {counts.yellow}
-                  </span>
-                )}
-                {counts.red > 0 && (
-                  <span className="inline-flex items-center justify-center rounded-full min-w-[18px] h-[18px] px-[6px] text-[11px] font-bold bg-red-500 text-white">
-                    {counts.red}
-                  </span>
-                )}
-              </>
-            );
-          })()}
-        </button>
+        {!isEditMode && (
+          <>
+            <button
+              onClick={() => setIsSearchOpen(true)}
+              className="flex items-center gap-fine px-[10px] py-2 rounded-control transition-all bg-transparent text-text-secondary hover:bg-bg-content hover:text-text-primary"
+              title="Search (⌘K)"
+            >
+              <Search className="w-5 h-5" />
+            </button>
+            
+            <ThemeToggle />
+            <button
+              onClick={toggleTodoPanel}
+              className="flex items-center gap-fine px-[10px] py-2 rounded-control transition-all bg-transparent text-text-secondary hover:bg-bg-content hover:text-text-primary"
+            >
+              <ListTodo className="w-5 h-5" />
+              <span className="text-value font-medium">TODOs</span>
+              {(() => {
+                const now = new Date();
+                now.setHours(0, 0, 0, 0);
+                const counts = todos.reduce(
+                  (acc, t) => {
+                    if (!t.deadline || t.completed) return acc;
+                    const d = new Date(t.deadline);
+                    d.setHours(0, 0, 0, 0);
+                    const diffDays = Math.ceil((d.getTime() - now.getTime()) / 86400000);
+                    if (diffDays < 0) return acc;
+                    if (diffDays <= 1) acc.red += 1;
+                    else if (diffDays < 3) acc.yellow += 1;
+                    return acc;
+                  },
+                  { red: 0, yellow: 0 },
+                );
+                return (
+                  <>
+                    {counts.yellow > 0 && (
+                      <span className="inline-flex items-center justify-center rounded-full min-w-[18px] h-[18px] px-[6px] text-[11px] font-bold bg-yellow-500 text-white">
+                        {counts.yellow}
+                      </span>
+                    )}
+                    {counts.red > 0 && (
+                      <span className="inline-flex items-center justify-center rounded-full min-w-[18px] h-[18px] px-[6px] text-[11px] font-bold bg-red-500 text-white">
+                        {counts.red}
+                      </span>
+                    )}
+                  </>
+                );
+              })()}
+            </button>
+          </>
+        )}
 
         <button
           onClick={toggleEditMode}
-          className={`flex items-center gap-fine px-coarse py-fine rounded-control transition-all ${isEditMode
+          className={`flex items-center gap-fine px-[10px] py-2 rounded-control transition-all ${isEditMode
               ? 'bg-interactive-primary text-white hover:bg-interactive-primary-hover shadow-card-sm'
               : 'bg-transparent text-text-secondary hover:bg-bg-content hover:text-text-primary'
             }`}
         >
           {isEditMode ? (
             <>
-              <Check className="w-4 h-4" />
+              <Check className="w-5 h-5" />
               <span className="text-value font-medium">Done</span>
             </>
           ) : (
             <>
-              <Settings className="w-4 h-4" />
+              <Settings className="w-5 h-5" />
               <span className="text-value font-medium">Customize</span>
             </>
           )}
         </button>
       </div>
 
-      <div className="max-w-7xl mx-auto px-page py-section min-h-screen flex flex-col justify-center">
+      <main id="main-content" className="max-w-7xl mx-auto px-page py-section min-h-screen flex flex-col justify-center" role="main">
         {slots.length === 0 ? (
           <>
             {!isEditMode && <EmptyState />}
@@ -182,15 +208,25 @@ function App() {
               strategy={rectSortingStrategy}
             >
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-coarse">
-                {slots.map((slot) => (
-                  <Slot key={slot.id} slot={slot} isEditMode={isEditMode} />
+                {slots.map((slot, index) => (
+                  <div 
+                    key={slot.id} 
+                    className="animate-fade-in-up"
+                    style={{ animationDelay: `${index * 50}ms` }}
+                  >
+                    <Slot slot={slot} isEditMode={isEditMode} />
+                  </div>
                 ))}
-                {isEditMode && <AddSlotButton />}
+                {isEditMode && (
+                  <div className="animate-fade-in-up" style={{ animationDelay: `${slots.length * 50}ms` }}>
+                    <AddSlotButton />
+                  </div>
+                )}
               </div>
             </SortableContext>
           </DndContext>
         )}
-      </div>
+      </main>
 
       {addLinkSlotId && (
         <AddLinkModal
@@ -211,6 +247,8 @@ function App() {
         title={confirmTitle}
         message={confirmMessage}
       />
+
+      <SearchOverlay isOpen={isSearchOpen} onClose={() => setIsSearchOpen(false)} />
     </div>
   );
 }

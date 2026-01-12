@@ -89,18 +89,19 @@ export const Link = ({ link, slotId, isEditMode }: LinkProps) => {
 
       <a 
         href={link.url} 
-        className="flex-1 flex items-center gap-normal min-w-0 p-fine hover:bg-bg-wash rounded-control transition-colors"
+        className="flex-1 flex items-center gap-normal min-w-0 p-fine hover:bg-bg-wash rounded-control transition-all duration-200 hover:translate-x-0.5 group/link"
       >
         {content}
       </a>
 
       {isEditMode && (
-        <div className="flex gap-fine opacity-0 group-hover:opacity-100 transition-opacity p-fine">
+        <div className="flex gap-fine opacity-0 group-hover:opacity-100 focus-within:opacity-100 transition-opacity p-fine">
           <button
             onClick={handleEdit}
-            className="p-fine text-icon-placeholder hover:text-interactive-primary transition-colors"
+            className="p-fine text-icon-placeholder hover:text-interactive-primary transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-interactive-primary rounded-control"
+            aria-label={`Edit "${link.title}"`}
           >
-            <Edit2 className="w-3 h-3" />
+            <Edit2 className="w-3 h-3" aria-hidden="true" />
           </button>
           <button
             onClick={() =>
@@ -110,9 +111,10 @@ export const Link = ({ link, slotId, isEditMode }: LinkProps) => {
                 handleDelete,
               )
             }
-            className="p-fine text-icon-placeholder hover:text-red-500 transition-colors"
+            className="p-fine text-icon-placeholder hover:text-red-500 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-accent-danger rounded-control"
+            aria-label={`Delete "${link.title}"`}
           >
-            <Trash2 className="w-3 h-3" />
+            <Trash2 className="w-3 h-3" aria-hidden="true" />
           </button>
         </div>
       )}

@@ -21,6 +21,11 @@ export default {
         'interactive-selected': 'rgb(var(--interactive-selected) / var(--interactive-selected-opacity))',
         'icon-default': 'rgb(var(--icon-default) / var(--icon-default-opacity))',
         'icon-placeholder': 'rgb(var(--text-placeholder) / var(--text-placeholder-opacity))',
+        'accent-warm': 'rgb(var(--accent-warm) / <alpha-value>)',
+        'accent-success': 'rgb(var(--accent-success) / <alpha-value>)',
+        'accent-danger': 'rgb(var(--accent-danger) / <alpha-value>)',
+        'gradient-start': 'rgb(var(--gradient-start) / <alpha-value>)',
+        'gradient-end': 'rgb(var(--gradient-end) / <alpha-value>)',
       },
       borderRadius: {
         'content': '6px',
@@ -36,7 +41,7 @@ export default {
         'section': '32px',
       },
       fontFamily: {
-        'custom': ['Inter', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'sans-serif'],
+        'custom': ['Plus Jakarta Sans', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'sans-serif'],
       },
       fontSize: {
         'header1': ['20px', { lineHeight: '1.3', fontWeight: '700', letterSpacing: '-0.02em' }],

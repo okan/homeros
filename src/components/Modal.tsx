@@ -1,5 +1,5 @@
 import { X } from 'lucide-react';
-import { ReactNode } from 'react';
+import { ReactNode, useEffect, useRef } from 'react';
 
 interface ModalProps {
   isOpen: boolean;
@@ -9,23 +9,53 @@ interface ModalProps {
 }
 
 export const Modal = ({ isOpen, onClose, title, children }: ModalProps) => {
+  const modalRef = useRef<HTMLDivElement>(null);
+  const closeButtonRef = useRef<HTMLButtonElement>(null);
+
+  useEffect(() => {
+    if (!isOpen) return;
+
+    closeButtonRef.current?.focus();
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        onClose();
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen]);
+
   if (!isOpen) return null;
 
   return (
     <>
-      <div className="fixed inset-0 bg-black/30 z-50 transition-opacity" onClick={onClose} />
-      <div className="fixed inset-0 z-50 flex items-center justify-center p-component pointer-events-none">
+      <div 
+        className="fixed inset-0 bg-black/30 z-50 transition-opacity" 
+        onClick={onClose}
+        aria-hidden="true"
+      />
+      <div 
+        className="fixed inset-0 z-50 flex items-center justify-center p-component pointer-events-none"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="modal-title"
+      >
         <div
-          className="bg-bg-content rounded-container border border-border-element max-w-md w-full pointer-events-auto transform transition-all duration-200 ease-out"
+          ref={modalRef}
+          className="glass-strong rounded-container border border-border-element max-w-md w-full pointer-events-auto transform transition-all duration-200 ease-out shadow-card-lg animate-scale-in"
           onClick={(e) => e.stopPropagation()}
         >
           <div className="flex items-center justify-between p-component">
-            <h2 className="text-header3 text-text-primary font-semibold">{title}</h2>
+            <h2 id="modal-title" className="text-header3 text-text-primary font-semibold">{title}</h2>
             <button
+              ref={closeButtonRef}
               onClick={onClose}
-              className="p-fine text-icon-placeholder hover:text-text-primary transition-colors rounded-control hover:bg-bg-wash"
+              className="p-fine text-icon-placeholder hover:text-text-primary transition-colors rounded-control hover:bg-bg-wash focus:outline-none focus-visible:ring-2 focus-visible:ring-interactive-primary"
+              aria-label="Close modal"
             >
-              <X className="w-5 h-5" />
+              <X className="w-5 h-5" aria-hidden="true" />
             </button>
           </div>
           <div className="p-component">{children}</div>

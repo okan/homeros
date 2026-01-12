@@ -5,7 +5,7 @@ import { v4 as uuidv4 } from 'uuid';
 export interface Habit {
     id: string;
     text: string;
-    completedDates: string[]; // ISO date strings (YYYY-MM-DD)
+    completedDates: string[];
 }
 
 interface HabitState {

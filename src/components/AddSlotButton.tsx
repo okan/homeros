@@ -29,7 +29,7 @@ export const AddSlotButton = () => {
     return (
       <form
         onSubmit={handleSubmit}
-        className="bg-bg-content/80 backdrop-blur-sm rounded-container p-coarse min-h-[200px] flex flex-col justify-center border border-border-element/30"
+        className="glass rounded-container p-coarse min-h-[200px] flex flex-col justify-center border border-border-element/30 shadow-card-sm"
       >
         <div className="flex items-center gap-normal mb-coarse">
           <IconPicker selectedIcon={icon} onSelect={setIcon} />
@@ -39,13 +39,13 @@ export const AddSlotButton = () => {
             onChange={(e) => setName(e.target.value)}
             placeholder="Slot name"
             autoFocus
-            className="flex-1 px-coarse py-normal text-value bg-bg-content border border-border-element rounded-control focus:outline-none focus:border-border-element/30 transition-colors"
+            className="flex-1 px-coarse py-normal text-value bg-bg-content border border-border-element rounded-control focus:outline-none focus:border-interactive-primary focus:ring-2 focus:ring-interactive-primary/20 transition-all"
           />
         </div>
         <div className="flex gap-fine">
           <button
             type="submit"
-            className="flex-1 flex items-center justify-center gap-fine px-coarse py-normal bg-interactive-primary hover:bg-interactive-primary-hover active:bg-interactive-primary-active text-white rounded-control transition-colors"
+            className="flex-1 flex items-center justify-center gap-fine px-coarse py-normal bg-interactive-primary hover:bg-interactive-primary-hover active:bg-interactive-primary-active text-white rounded-control transition-colors btn-press"
           >
             <Check className="w-4 h-4" />
             <span className="text-value font-bold">Add</span>

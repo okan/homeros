@@ -120,13 +120,17 @@ export const TodoItem = ({ todo, showUrgencyGutter }: TodoItemProps) => {
       )}
       <button
         onClick={() => toggleTodo(todo.id)}
-        className={`w-5 h-5 rounded-full flex items-center justify-center transition-all ${
+        className={`w-5 h-5 rounded-full flex items-center justify-center transition-all duration-200 btn-press focus:outline-none focus-visible:ring-2 focus-visible:ring-interactive-primary focus-visible:ring-offset-2 ${
           todo.completed
-            ? 'bg-interactive-primary scale-110'
+            ? 'bg-interactive-primary shadow-sm'
             : 'bg-bg-wash hover:bg-border-element hover:scale-110'
         }`}
+        aria-label={todo.completed ? `Mark "${todo.text}" as incomplete` : `Mark "${todo.text}" as complete`}
+        aria-pressed={todo.completed}
+        role="checkbox"
+        aria-checked={todo.completed}
       >
-        {todo.completed && <Check className="w-3 h-3 text-white" />}
+        {todo.completed && <Check className="w-3 h-3 text-white animate-check" aria-hidden="true" />}
       </button>
 
       <div className="flex-1 min-w-0">
@@ -147,18 +151,20 @@ export const TodoItem = ({ todo, showUrgencyGutter }: TodoItemProps) => {
         )}
       </div>
 
-      <div className="flex gap-fine opacity-0 group-hover:opacity-100 transition-opacity">
+      <div className="flex gap-fine opacity-0 group-hover:opacity-100 focus-within:opacity-100 transition-opacity">
         <button
           onClick={() => setIsEditing(true)}
-          className="p-fine text-icon-placeholder hover:text-interactive-primary transition-colors"
+          className="p-fine text-icon-placeholder hover:text-interactive-primary transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-interactive-primary rounded-control"
+          aria-label={`Edit "${todo.text}"`}
         >
-          <Edit2 className="w-4 h-4" />
+          <Edit2 className="w-4 h-4" aria-hidden="true" />
         </button>
         <button
           onClick={() => deleteTodo(todo.id)}
-          className="p-fine text-icon-placeholder hover:text-red-500 transition-colors"
+          className="p-fine text-icon-placeholder hover:text-red-500 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-accent-danger rounded-control"
+          aria-label={`Delete "${todo.text}"`}
         >
-          <Trash2 className="w-4 h-4" />
+          <Trash2 className="w-4 h-4" aria-hidden="true" />
         </button>
       </div>
     </div>
