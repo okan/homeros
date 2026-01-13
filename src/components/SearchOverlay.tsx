@@ -1,8 +1,7 @@
 import { useState, useEffect, useRef, useMemo } from 'react';
-import { Search, Command, ArrowRight, Globe, Folder } from 'lucide-react';
+import { Search, Command, ArrowRight, Globe } from 'lucide-react';
 import { useBookmarkStore } from '../store/useBookmarkStore';
 import { getFaviconUrls } from '../utils/favicon';
-import { getIconComponent } from './IconPicker';
 
 interface SearchOverlayProps {
   isOpen: boolean;
@@ -10,12 +9,11 @@ interface SearchOverlayProps {
 }
 
 interface SearchResult {
-  type: 'link' | 'slot';
   id: string;
   title: string;
-  url?: string;
-  slotName?: string;
-  slotIcon?: string;
+  url: string;
+  slotName: string;
+  slotIcon: string;
   description?: string;
 }
 
@@ -40,23 +38,9 @@ export const SearchOverlay = ({ isOpen, onClose }: SearchOverlayProps) => {
     const results: SearchResult[] = [];
 
     slots.forEach((slot) => {
-      if (slot.name.toLowerCase().includes(searchTerm)) {
-        results.push({
-          type: 'slot',
-          id: slot.id,
-          title: slot.name,
-          slotIcon: slot.icon,
-        });
-      }
-
       slot.links.forEach((link) => {
-        if (
-          link.title.toLowerCase().includes(searchTerm) ||
-          link.url.toLowerCase().includes(searchTerm) ||
-          link.description?.toLowerCase().includes(searchTerm)
-        ) {
+        if (link.title.toLowerCase().includes(searchTerm)) {
           results.push({
-            type: 'link',
             id: link.id,
             title: link.title,
             url: link.url,
@@ -84,9 +68,7 @@ export const SearchOverlay = ({ isOpen, onClose }: SearchOverlayProps) => {
       } else if (e.key === 'Enter' && results[selectedIndex]) {
         e.preventDefault();
         const result = results[selectedIndex];
-        if (result.type === 'link' && result.url) {
-          window.location.href = result.url;
-        }
+        window.location.href = result.url;
         onClose();
       } else if (e.key === 'Escape') {
         onClose();
@@ -139,27 +121,21 @@ export const SearchOverlay = ({ isOpen, onClose }: SearchOverlayProps) => {
               ) : (
                 <div className="space-y-1">
                   {results.map((result, index) => {
-                    const SlotIcon = result.slotIcon ? getIconComponent(result.slotIcon) : Folder;
-                    const faviconUrls = result.url ? getFaviconUrls(result.url) : [];
+                    const faviconUrls = getFaviconUrls(result.url);
 
                     return (
                       <a
-                        key={`${result.type}-${result.id}`}
-                        href={result.type === 'link' ? result.url : undefined}
+                        key={result.id}
+                        href={result.url}
                         className={`flex items-center gap-3 px-3 py-2.5 rounded-control transition-colors cursor-pointer ${
                           index === selectedIndex
                             ? 'bg-interactive-selected'
                             : 'hover:bg-bg-wash'
                         }`}
-                        onClick={(e) => {
-                          if (result.type === 'slot') {
-                            e.preventDefault();
-                          }
-                          onClose();
-                        }}
+                        onClick={() => onClose()}
                       >
                         <div className="w-8 h-8 rounded-lg bg-bg-wash flex items-center justify-center shrink-0">
-                          {result.type === 'link' && faviconUrls.length > 0 ? (
+                          {faviconUrls.length > 0 ? (
                             <img
                               src={faviconUrls[0]}
                               alt=""
@@ -168,10 +144,8 @@ export const SearchOverlay = ({ isOpen, onClose }: SearchOverlayProps) => {
                                 (e.target as HTMLImageElement).style.display = 'none';
                               }}
                             />
-                          ) : result.type === 'link' ? (
-                            <Globe className="w-4 h-4 text-icon-placeholder" />
                           ) : (
-                            <SlotIcon className="w-4 h-4 text-icon-default" />
+                            <Globe className="w-4 h-4 text-icon-placeholder" />
                           )}
                         </div>
 
@@ -180,11 +154,9 @@ export const SearchOverlay = ({ isOpen, onClose }: SearchOverlayProps) => {
                             <span className="text-value font-medium text-text-primary truncate">
                               {result.title}
                             </span>
-                            {result.type === 'link' && result.slotName && (
-                              <span className="text-accent text-text-placeholder truncate">
-                                in {result.slotName}
-                              </span>
-                            )}
+                            <span className="text-accent text-text-placeholder truncate">
+                              in {result.slotName}
+                            </span>
                           </div>
                           {result.description && (
                             <p className="text-accent text-text-placeholder truncate">
