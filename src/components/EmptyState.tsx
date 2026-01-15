@@ -1,4 +1,4 @@
-import { Home, Folder, Code, Bookmark, ArrowRight, Settings } from 'lucide-react';
+import { Folder, Code, Bookmark, ArrowRight, Settings } from 'lucide-react';
 import { useBookmarkStore } from '../store/useBookmarkStore';
 
 const QUICK_START_SLOTS = [
@@ -16,11 +16,8 @@ export const EmptyState = () => {
 
   return (
     <div className="flex flex-col items-center justify-center min-h-[500px] text-center animate-fade-in-up">
-      <div className="relative mb-6">
-        <div className="absolute inset-0 bg-interactive-primary/20 blur-2xl rounded-full scale-150" />
-        <div className="relative w-20 h-20 rounded-2xl bg-gradient-to-br from-interactive-primary to-interactive-primary-hover flex items-center justify-center shadow-card-lg">
-          <Home className="w-10 h-10 text-white" />
-        </div>
+      <div className="mb-6">
+        <img src="/icon-128.png" alt="Homeros" className="w-20 h-20" />
       </div>
 
       <h1 className="text-header1 text-text-primary mb-2">

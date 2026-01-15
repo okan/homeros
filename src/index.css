@@ -21,10 +21,10 @@
     --border-divider: 28 25 23;
     --border-divider-opacity: 0.45;
 
-    --interactive-primary: 58 185 178;
-    --interactive-primary-hover: 45 163 156;
-    --interactive-primary-active: 35 138 132;
-    --interactive-selected: 58 185 178;
+    --interactive-primary: 143 135 111;
+    --interactive-primary-hover: 125 118 97;
+    --interactive-primary-active: 108 102 84;
+    --interactive-selected: 143 135 111;
     --interactive-selected-opacity: 0.12;
 
     --accent-warm: 251 146 60;
@@ -56,10 +56,10 @@
     --border-divider: 255 255 255;
     --border-divider-opacity: 0.16;
 
-    --interactive-primary: 101 210 204;
-    --interactive-primary-hover: 80 185 178;
-    --interactive-primary-active: 65 160 153;
-    --interactive-selected: 101 210 204;
+    --interactive-primary: 163 155 131;
+    --interactive-primary-hover: 143 135 111;
+    --interactive-primary-active: 125 118 97;
+    --interactive-selected: 163 155 131;
     --interactive-selected-opacity: 0.15;
 
     --accent-warm: 251 191 36;

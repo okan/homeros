@@ -10,4 +10,7 @@ export default defineManifest({
   chrome_url_overrides: {
     newtab: 'index.html',
   },
+  icons: {
+    '128': 'icon-128.png',
+  },
 });
