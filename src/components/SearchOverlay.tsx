@@ -39,7 +39,11 @@ export const SearchOverlay = ({ isOpen, onClose }: SearchOverlayProps) => {
 
     slots.forEach((slot) => {
       slot.links.forEach((link) => {
-        if (link.title.toLowerCase().includes(searchTerm)) {
+        const titleMatches = link.title.toLowerCase().includes(searchTerm);
+        const descriptionMatches = link.description?.toLowerCase().includes(searchTerm);
+        const tagsMatch = link.tags?.some((tag) => tag.toLowerCase().includes(searchTerm));
+
+        if (titleMatches || descriptionMatches || tagsMatch) {
           results.push({
             id: link.id,
             title: link.title,

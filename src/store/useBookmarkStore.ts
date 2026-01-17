@@ -37,7 +37,7 @@ export const useBookmarkStore = create<BookmarkStore>((set) => ({
       slots: slots.map((slot, index) => ({ ...slot, order: index })),
     })),
 
-  addLink: (slotId: string, title: string, url: string, description?: string) =>
+  addLink: (slotId: string, title: string, url: string, description?: string, tags?: string[]) =>
     set((state) => ({
       slots: state.slots.map((slot) => {
         if (slot.id === slotId) {
@@ -46,6 +46,7 @@ export const useBookmarkStore = create<BookmarkStore>((set) => ({
             title,
             url,
             description,
+            tags,
             order: slot.links.length,
           };
           return { ...slot, links: [...slot.links, newLink] };
@@ -54,14 +55,14 @@ export const useBookmarkStore = create<BookmarkStore>((set) => ({
       }),
     })),
 
-  updateLink: (slotId: string, linkId: string, title: string, url: string, description?: string) =>
+  updateLink: (slotId: string, linkId: string, title: string, url: string, description?: string, tags?: string[]) =>
     set((state) => ({
       slots: state.slots.map((slot) => {
         if (slot.id === slotId) {
           return {
             ...slot,
             links: slot.links.map((link) =>
-              link.id === linkId ? { ...link, title, url, description } : link,
+              link.id === linkId ? { ...link, title, url, description, tags } : link,
             ),
           };
         }

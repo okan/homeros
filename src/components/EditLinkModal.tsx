@@ -1,6 +1,7 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { Check, AlertCircle } from 'lucide-react';
 import { Modal } from './Modal';
+import { TagInput } from './TagInput';
 import { useBookmarkStore } from '../store/useBookmarkStore';
 import { useModalStore } from '../store/useModalStore';
 
@@ -20,14 +21,25 @@ export const EditLinkModal = () => {
   const [title, setTitle] = useState('');
   const [url, setUrl] = useState('');
   const [description, setDescription] = useState('');
+  const [tags, setTags] = useState<string[]>([]);
   const [urlError, setUrlError] = useState('');
   const updateLink = useBookmarkStore((state) => state.updateLink);
+  const slots = useBookmarkStore((state) => state.slots);
+
+  const allTags = useMemo(() => {
+    const tagSet = new Set<string>();
+    slots.forEach((slot) =>
+      slot.links.forEach((link) => link.tags?.forEach((tag) => tagSet.add(tag)))
+    );
+    return Array.from(tagSet).sort();
+  }, [slots]);
 
   useEffect(() => {
     if (editLinkData) {
       setTitle(editLinkData.title);
       setUrl(editLinkData.url);
       setDescription(editLinkData.description || '');
+      setTags(editLinkData.tags || []);
     }
   }, [editLinkData]);
 
@@ -54,6 +66,7 @@ export const EditLinkModal = () => {
         title.trim(),
         url.trim(),
         description.trim() || undefined,
+        tags.length > 0 ? tags : undefined,
       );
       handleClose();
     }
@@ -63,6 +76,7 @@ export const EditLinkModal = () => {
     setTitle('');
     setUrl('');
     setDescription('');
+    setTags([]);
     setUrlError('');
     closeEditLinkModal();
   };
@@ -108,6 +122,13 @@ export const EditLinkModal = () => {
           onChange={(e) => setDescription(e.target.value)}
           placeholder="Description (optional)"
           className="w-full px-coarse py-normal text-value bg-bg-content border border-border-element rounded-control focus:outline-none focus:border-interactive-primary focus:ring-2 focus:ring-interactive-primary/20 transition-all"
+        />
+
+        <TagInput
+          tags={tags}
+          onChange={setTags}
+          suggestions={allTags}
+          placeholder="Add tags (optional)"
         />
 
         <button

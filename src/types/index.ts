@@ -3,6 +3,7 @@ export interface Link {
   title: string;
   url: string;
   description?: string;
+  tags?: string[];
   order: number;
 }
 
@@ -31,13 +32,14 @@ export interface BookmarkStore {
   updateSlot: (id: string, name: string, icon: string) => void;
   deleteSlot: (id: string) => void;
   reorderSlots: (slots: Slot[]) => void;
-  addLink: (slotId: string, title: string, url: string, description?: string) => void;
+  addLink: (slotId: string, title: string, url: string, description?: string, tags?: string[]) => void;
   updateLink: (
     slotId: string,
     linkId: string,
     title: string,
     url: string,
     description?: string,
+    tags?: string[],
   ) => void;
   deleteLink: (slotId: string, linkId: string) => void;
   reorderLinks: (slotId: string, links: Link[]) => void;

@@ -9,13 +9,14 @@ interface ModalStore {
   isEditLinkModalOpen: boolean;
   editLinkSlotId: string | null;
   editLinkId: string | null;
-  editLinkData: { title: string; url: string; description?: string } | null;
+  editLinkData: { title: string; url: string; description?: string; tags?: string[] } | null;
   openEditLinkModal: (
     slotId: string,
     linkId: string,
     title: string,
     url: string,
     description?: string,
+    tags?: string[],
   ) => void;
   closeEditLinkModal: () => void;
 
@@ -43,12 +44,13 @@ export const useModalStore = create<ModalStore>((set) => ({
     title: string,
     url: string,
     description?: string,
+    tags?: string[],
   ) =>
     set({
       isEditLinkModalOpen: true,
       editLinkSlotId: slotId,
       editLinkId: linkId,
-      editLinkData: { title, url, description },
+      editLinkData: { title, url, description, tags },
     }),
   closeEditLinkModal: () =>
     set({

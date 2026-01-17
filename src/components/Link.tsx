@@ -35,7 +35,7 @@ export const Link = ({ link, slotId, isEditMode }: LinkProps) => {
   };
 
   const handleEdit = () => {
-    openEditLinkModal(slotId, link.id, link.title, link.url, link.description);
+    openEditLinkModal(slotId, link.id, link.title, link.url, link.description, link.tags);
   };
 
   const handleFaviconError = () => {

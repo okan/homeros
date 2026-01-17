@@ -1,6 +1,7 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { Check, AlertCircle, Sparkles } from 'lucide-react';
 import { Modal } from './Modal';
+import { TagInput } from './TagInput';
 import { useBookmarkStore } from '../store/useBookmarkStore';
 
 interface AddLinkModalProps {
@@ -30,9 +31,19 @@ export const AddLinkModal = ({ isOpen, onClose, slotId }: AddLinkModalProps) => 
   const [title, setTitle] = useState('');
   const [url, setUrl] = useState('');
   const [description, setDescription] = useState('');
+  const [tags, setTags] = useState<string[]>([]);
   const [urlError, setUrlError] = useState('');
   const [titleSuggested, setTitleSuggested] = useState(false);
   const addLink = useBookmarkStore((state) => state.addLink);
+  const slots = useBookmarkStore((state) => state.slots);
+
+  const allTags = useMemo(() => {
+    const tagSet = new Set<string>();
+    slots.forEach((slot) =>
+      slot.links.forEach((link) => link.tags?.forEach((tag) => tagSet.add(tag)))
+    );
+    return Array.from(tagSet).sort();
+  }, [slots]);
 
   const suggestTitleFromUrl = useCallback((inputUrl: string) => {
     if (!title && isValidUrl(inputUrl)) {
@@ -71,7 +82,13 @@ export const AddLinkModal = ({ isOpen, onClose, slotId }: AddLinkModalProps) => 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (title.trim() && url.trim() && isValidUrl(url)) {
-      addLink(slotId, title.trim(), url.trim(), description.trim() || undefined);
+      addLink(
+        slotId,
+        title.trim(),
+        url.trim(),
+        description.trim() || undefined,
+        tags.length > 0 ? tags : undefined,
+      );
       handleClose();
     }
   };
@@ -80,6 +97,7 @@ export const AddLinkModal = ({ isOpen, onClose, slotId }: AddLinkModalProps) => 
     setTitle('');
     setUrl('');
     setDescription('');
+    setTags([]);
     setUrlError('');
     setTitleSuggested(false);
     onClose();
@@ -136,6 +154,13 @@ export const AddLinkModal = ({ isOpen, onClose, slotId }: AddLinkModalProps) => 
           onChange={(e) => setDescription(e.target.value)}
           placeholder="Description (optional)"
           className="w-full px-coarse py-normal text-value bg-bg-content border border-border-element rounded-control focus:outline-none focus:border-interactive-primary focus:ring-2 focus:ring-interactive-primary/20 transition-all"
+        />
+
+        <TagInput
+          tags={tags}
+          onChange={setTags}
+          suggestions={allTags}
+          placeholder="Add tags (optional)"
         />
 
         <button
