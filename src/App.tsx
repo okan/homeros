@@ -28,13 +28,14 @@ import { AddLinkModal } from './components/AddLinkModal';
 import { EditLinkModal } from './components/EditLinkModal';
 import { ConfirmModal } from './components/ConfirmModal';
 import { SearchOverlay } from './components/SearchOverlay';
-import { Settings, Check, ListTodo, Search } from 'lucide-react';
+import { SettingsModal } from './components/SettingsModal';
+import { Settings, Check, ListTodo, Search, Paintbrush } from 'lucide-react';
 import { useThemeStore } from './store/useThemeStore';
-import { ThemeToggle } from './components/ThemeToggle';
 
 function App() {
   const { isDarkMode } = useThemeStore();
   const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
 
   useEffect(() => {
     if (isDarkMode) {
@@ -124,7 +125,6 @@ function App() {
               <Search className="w-5 h-5" />
             </button>
             
-            <ThemeToggle />
             <button
               onClick={toggleTodoPanel}
               className="flex items-center gap-fine px-[10px] py-2 rounded-control transition-all bg-transparent text-text-secondary hover:bg-bg-content hover:text-text-primary"
@@ -180,11 +180,21 @@ function App() {
             </>
           ) : (
             <>
-              <Settings className="w-5 h-5" />
+              <Paintbrush className="w-5 h-5" />
               <span className="text-value font-medium">Customize</span>
             </>
           )}
         </button>
+
+        {!isEditMode && (
+          <button
+            onClick={() => setIsSettingsOpen(true)}
+            className="flex items-center gap-fine px-[10px] py-2 rounded-control transition-all bg-transparent text-text-secondary hover:bg-bg-content hover:text-text-primary"
+            title="Settings"
+          >
+            <Settings className="w-5 h-5" />
+          </button>
+        )}
       </div>
 
       <main id="main-content" className="max-w-7xl mx-auto px-page py-section min-h-screen flex flex-col justify-center" role="main">
@@ -249,6 +259,8 @@ function App() {
       />
 
       <SearchOverlay isOpen={isSearchOpen} onClose={() => setIsSearchOpen(false)} />
+
+      <SettingsModal isOpen={isSettingsOpen} onClose={() => setIsSettingsOpen(false)} />
     </div>
   );
 }

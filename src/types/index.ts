@@ -57,3 +57,19 @@ export interface TodoStore {
   reorderTodos: (todos: Todo[]) => void;
   loadTodosFromStorage: (data: Todo[]) => void;
 }
+
+export interface Habit {
+  id: string;
+  text: string;
+  completedDates: string[];
+}
+
+export interface HomerosExport {
+  version: 1;
+  exportedAt: string;
+  data: {
+    bookmarks: Slot[];
+    todos: Todo[];
+    habits: Habit[];
+  };
+}
