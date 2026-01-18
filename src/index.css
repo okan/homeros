@@ -160,6 +160,20 @@
     animation: shimmer 1.5s infinite;
   }
 
+  @keyframes float {
+    0%,
+    100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-8px);
+    }
+  }
+
+  .animate-float {
+    animation: float 3s ease-in-out infinite;
+  }
+
   .stagger-1 {
     animation-delay: 50ms;
   }

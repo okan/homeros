@@ -29,13 +29,16 @@ import { EditLinkModal } from './components/EditLinkModal';
 import { ConfirmModal } from './components/ConfirmModal';
 import { SearchOverlay } from './components/SearchOverlay';
 import { SettingsModal } from './components/SettingsModal';
+import { OnboardingCarousel } from './components/OnboardingCarousel';
 import { Settings, Check, ListTodo, Search, Paintbrush } from 'lucide-react';
 import { useThemeStore } from './store/useThemeStore';
+import { useOnboarding } from './hooks/useOnboarding';
 
 function App() {
   const { isDarkMode } = useThemeStore();
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const { showOnboarding, isLoading: isOnboardingLoading, completeOnboarding } = useOnboarding();
 
   useEffect(() => {
     if (isDarkMode) {
@@ -261,6 +264,10 @@ function App() {
       <SearchOverlay isOpen={isSearchOpen} onClose={() => setIsSearchOpen(false)} />
 
       <SettingsModal isOpen={isSettingsOpen} onClose={() => setIsSettingsOpen(false)} />
+
+      {!isOnboardingLoading && showOnboarding && (
+        <OnboardingCarousel onComplete={completeOnboarding} />
+      )}
     </div>
   );
 }
