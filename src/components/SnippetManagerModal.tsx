@@ -61,7 +61,7 @@ export const SnippetManagerModal = ({ isOpen, onClose }: SnippetManagerModalProp
                                 type="text"
                                 value={newKey}
                                 onChange={(e) => setNewKey(e.target.value)}
-                                placeholder="e.g. email, iban, address"
+                                placeholder="e.g. emails, phone numbers, templates"
                                 className="w-full px-3 py-2 bg-bg-content border border-border-element rounded-control text-value focus:border-interactive-primary focus:ring-1 focus:ring-interactive-primary/20 outline-none transition-all"
                                 autoFocus
                             />
