@@ -10,6 +10,8 @@ import {
   Command,
   Tag,
   Download,
+  Scissors,
+  ToggleLeft,
 } from 'lucide-react';
 
 interface OnboardingCarouselProps {
@@ -48,6 +50,12 @@ const slides: Slide[] = [
     features: ['Set deadlines', 'Visual deadline warnings', 'Quick add from anywhere'],
   },
   {
+    icon: <Scissors className="w-12 h-12" />,
+    title: 'Quick Text Snippets',
+    description: 'Store and copy frequently used texts instantly. Perfect for emails, bios, and more.',
+    features: ['Enable from Settings toggle', 'Access from top-right icon', 'Search & copy with ⌘K'],
+  },
+  {
     icon: <Palette className="w-12 h-12" />,
     title: 'Make it Yours',
     description: 'Customize every aspect. Switch themes, add tags, and backup your data anytime.',
@@ -59,6 +67,8 @@ const FeatureIcon = ({ feature }: { feature: string }) => {
   if (feature.includes('⌘K')) return <Command className="w-4 h-4 shrink-0" />;
   if (feature.includes('tag')) return <Tag className="w-4 h-4 shrink-0" />;
   if (feature.includes('Export')) return <Download className="w-4 h-4 shrink-0" />;
+  if (feature.includes('Settings')) return <ToggleLeft className="w-4 h-4 shrink-0" />;
+  if (feature.includes('icon') || feature.includes('Manage')) return <Scissors className="w-4 h-4 shrink-0" />;
   return <ArrowRight className="w-4 h-4 shrink-0" />;
 };
 
@@ -104,13 +114,12 @@ export const OnboardingCarousel = ({ onComplete }: OnboardingCarouselProps) => {
 
           <div className="p-8 pt-2 pb-6">
             <div
-              className={`transition-all duration-300 ${
-                isAnimating
+              className={`transition-all duration-300 ${isAnimating
                   ? direction === 'right'
                     ? 'opacity-0 -translate-x-8'
                     : 'opacity-0 translate-x-8'
                   : 'opacity-100 translate-x-0'
-              }`}
+                }`}
             >
               <div className="flex justify-center mb-6">
                 <div className="p-4 rounded-2xl bg-interactive-primary/10 text-interactive-primary animate-float">
@@ -148,11 +157,10 @@ export const OnboardingCarousel = ({ onComplete }: OnboardingCarouselProps) => {
                 <button
                   key={index}
                   onClick={() => goToSlide(index)}
-                  className={`transition-all duration-300 rounded-full ${
-                    index === currentSlide
+                  className={`transition-all duration-300 rounded-full ${index === currentSlide
                       ? 'w-8 h-2 bg-interactive-primary'
                       : 'w-2 h-2 bg-interactive-primary/30 hover:bg-interactive-primary/50'
-                  }`}
+                    }`}
                   aria-label={`Go to slide ${index + 1}`}
                 />
               ))}
