@@ -16,9 +16,12 @@ import {
 } from '@dnd-kit/sortable';
 import { useBookmarkStore } from './store/useBookmarkStore';
 import { useTodoStore } from './store/useTodoStore';
+import { useSnippetStore } from './store/useSnippetStore';
+import { useToastStore } from './store/useToastStore';
 import { useModalStore } from './store/useModalStore';
 import { useChromeStorage } from './hooks/useChromeStorage';
 import { useTodoStorage } from './hooks/useTodoStorage';
+import { useSnippetStorage } from './hooks/useSnippetStorage';
 import { useKeyboardShortcuts } from './hooks/useKeyboardShortcuts';
 import { Slot } from './components/Slot';
 import { AddSlotButton } from './components/AddSlotButton';
@@ -30,14 +33,17 @@ import { ConfirmModal } from './components/ConfirmModal';
 import { SearchOverlay } from './components/SearchOverlay';
 import { SettingsModal } from './components/SettingsModal';
 import { OnboardingCarousel } from './components/OnboardingCarousel';
-import { Settings, Check, ListTodo, Search, Paintbrush } from 'lucide-react';
+import { Settings, Check, ListTodo, Search, Paintbrush, Scissors } from 'lucide-react';
 import { useThemeStore } from './store/useThemeStore';
+import { SnippetManagerModal } from './components/SnippetManagerModal';
+import { Toast } from './components/Toast';
 import { useOnboarding } from './hooks/useOnboarding';
 
 function App() {
   const { isDarkMode } = useThemeStore();
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const [isSnippetManagerOpen, setIsSnippetManagerOpen] = useState(false);
   const { showOnboarding, isLoading: isOnboardingLoading, completeOnboarding } = useOnboarding();
 
   useEffect(() => {
@@ -50,8 +56,11 @@ function App() {
 
   useChromeStorage();
   useTodoStorage();
+  useSnippetStorage();
   const { slots, isEditMode, toggleEditMode, reorderSlots, reorderLinks } = useBookmarkStore();
   const { toggleTodoPanel, todos } = useTodoStore();
+  const { settings: snippetSettings } = useSnippetStore();
+  const { message: toastMessage, isVisible: isToastVisible } = useToastStore();
 
   useKeyboardShortcuts({
     onSearch: () => setIsSearchOpen(true),
@@ -114,7 +123,7 @@ function App() {
       <a href="#main-content" className="skip-link">
         Skip to main content
       </a>
-      
+
       <TodoPanel />
 
       <div className="fixed top-coarse right-coarse z-50 flex items-center gap-fine">
@@ -127,7 +136,7 @@ function App() {
             >
               <Search className="w-5 h-5" />
             </button>
-            
+
             <button
               onClick={toggleTodoPanel}
               className="flex items-center gap-fine px-[10px] py-2 rounded-control transition-all bg-transparent text-text-secondary hover:bg-bg-content hover:text-text-primary"
@@ -166,14 +175,25 @@ function App() {
                 );
               })()}
             </button>
+
+            {snippetSettings.enabled && (
+              <button
+                onClick={() => setIsSnippetManagerOpen(true)}
+                className="flex items-center gap-fine px-[10px] py-2 rounded-control transition-all bg-transparent text-text-secondary hover:bg-bg-content hover:text-text-primary"
+                title="Snippets"
+              >
+                <Scissors className="w-5 h-5" />
+                <span className="text-value font-medium">Snippets</span>
+              </button>
+            )}
           </>
         )}
 
         <button
           onClick={toggleEditMode}
           className={`flex items-center gap-fine px-[10px] py-2 rounded-control transition-all ${isEditMode
-              ? 'bg-interactive-primary text-white hover:bg-interactive-primary-hover shadow-card-sm'
-              : 'bg-transparent text-text-secondary hover:bg-bg-content hover:text-text-primary'
+            ? 'bg-interactive-primary text-white hover:bg-interactive-primary-hover shadow-card-sm'
+            : 'bg-transparent text-text-secondary hover:bg-bg-content hover:text-text-primary'
             }`}
         >
           {isEditMode ? (
@@ -222,8 +242,8 @@ function App() {
             >
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-coarse">
                 {slots.map((slot, index) => (
-                  <div 
-                    key={slot.id} 
+                  <div
+                    key={slot.id}
                     className="animate-fade-in-up"
                     style={{ animationDelay: `${index * 50}ms` }}
                   >
@@ -251,6 +271,15 @@ function App() {
 
       <EditLinkModal />
 
+      <SearchOverlay isOpen={isSearchOpen} onClose={() => setIsSearchOpen(false)} />
+
+      <SettingsModal isOpen={isSettingsOpen} onClose={() => setIsSettingsOpen(false)} />
+
+      <SnippetManagerModal
+        isOpen={isSnippetManagerOpen}
+        onClose={() => setIsSnippetManagerOpen(false)}
+      />
+
       <ConfirmModal
         isOpen={isConfirmModalOpen}
         onClose={closeConfirmModal}
@@ -261,13 +290,11 @@ function App() {
         message={confirmMessage}
       />
 
-      <SearchOverlay isOpen={isSearchOpen} onClose={() => setIsSearchOpen(false)} />
-
-      <SettingsModal isOpen={isSettingsOpen} onClose={() => setIsSettingsOpen(false)} />
-
       {!isOnboardingLoading && showOnboarding && (
         <OnboardingCarousel onComplete={completeOnboarding} />
       )}
+
+      <Toast message={toastMessage} isVisible={isToastVisible} />
     </div>
   );
 }

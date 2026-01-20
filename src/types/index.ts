@@ -64,6 +64,17 @@ export interface Habit {
   completedDates: string[];
 }
 
+export interface Snippet {
+  id: string;
+  key: string;
+  value: string;
+  createdAt: string;
+}
+
+export interface SnippetSettings {
+  enabled: boolean;
+}
+
 export interface HomerosExport {
   version: 1;
   exportedAt: string;
@@ -71,5 +82,6 @@ export interface HomerosExport {
     bookmarks: Slot[];
     todos: Todo[];
     habits: Habit[];
+    snippets?: Snippet[];
   };
 }

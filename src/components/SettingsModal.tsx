@@ -5,6 +5,10 @@ import { useBookmarkStore } from '../store/useBookmarkStore';
 import { useTodoStore } from '../store/useTodoStore';
 import { useHabitStore } from '../store/useHabitStore';
 import { useThemeStore } from '../store/useThemeStore';
+import { useSnippetStore } from '../store/useSnippetStore';
+import { useModalStore } from '../store/useModalStore';
+import { Scissors } from 'lucide-react';
+import { SnippetManagerModal } from './SnippetManagerModal';
 import {
   createExportData,
   downloadExport,
@@ -38,6 +42,9 @@ export const SettingsModal = ({ isOpen, onClose }: SettingsModalProps) => {
   const { todos, loadTodosFromStorage } = useTodoStore();
   const { habits, loadHabits } = useHabitStore();
   const { isDarkMode, setTheme } = useThemeStore();
+  const { snippets, settings, setSnippetsEnabled, clearSnippets } = useSnippetStore();
+  const { openConfirmModal } = useModalStore();
+  const [showSnippetManager, setShowSnippetManager] = useState(false);
 
   const handleExport = () => {
     const exportData = createExportData(slots, todos, habits);
@@ -248,17 +255,57 @@ export const SettingsModal = ({ isOpen, onClose }: SettingsModalProps) => {
                   </div>
                 </div>
                 <div
-                  className={`relative w-11 h-6 rounded-full transition-colors ${
-                    isDarkMode ? 'bg-interactive-primary' : 'bg-border-element'
-                  }`}
+                  className={`relative w-11 h-6 rounded-full transition-colors ${isDarkMode ? 'bg-interactive-primary' : 'bg-border-element'
+                    }`}
                 >
                   <div
-                    className={`absolute top-1 w-4 h-4 rounded-full bg-white shadow transition-transform ${
-                      isDarkMode ? 'translate-x-6' : 'translate-x-1'
-                    }`}
+                    className={`absolute top-1 w-4 h-4 rounded-full bg-white shadow transition-transform ${isDarkMode ? 'translate-x-6' : 'translate-x-1'
+                      }`}
                   />
                 </div>
               </button>
+            </div>
+
+            <div>
+              <h3 className="text-value font-medium text-text-primary mb-3">
+                Snippets
+              </h3>
+              <div className="space-y-2">
+                <div className="flex items-center justify-between p-3 rounded-control border border-border-element">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-lg bg-interactive-primary/10 flex items-center justify-center">
+                      <Scissors className="w-5 h-5 text-interactive-primary" />
+                    </div>
+                    <div>
+                      <p className="text-value text-text-primary font-medium">Text Snippets</p>
+                      <p className="text-sm text-text-secondary">Quick access & copy</p>
+                    </div>
+                  </div>
+                  <button
+                    onClick={() => {
+                      if (settings.enabled && snippets.length > 0) {
+                        openConfirmModal(
+                          'Disable Snippets?',
+                          'Disabling this feature will permanently delete all your snippets. Do you want to continue?',
+                          () => {
+                            setSnippetsEnabled(false);
+                            clearSnippets();
+                          }
+                        );
+                      } else {
+                        setSnippetsEnabled(!settings.enabled);
+                      }
+                    }}
+                    className={`relative w-11 h-6 rounded-full transition-colors ${settings.enabled ? 'bg-interactive-primary' : 'bg-border-element'
+                      }`}
+                  >
+                    <div
+                      className={`absolute top-1 w-4 h-4 rounded-full bg-white shadow transition-transform ${settings.enabled ? 'translate-x-6' : 'translate-x-1'
+                        }`}
+                    />
+                  </button>
+                </div>
+              </div>
             </div>
 
             <div>
@@ -330,8 +377,15 @@ export const SettingsModal = ({ isOpen, onClose }: SettingsModalProps) => {
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={handleClose} title={getTitle()}>
-      {renderContent()}
-    </Modal>
+    <>
+      <Modal isOpen={isOpen} onClose={handleClose} title={getTitle()}>
+        {renderContent()}
+      </Modal>
+
+      <SnippetManagerModal
+        isOpen={showSnippetManager}
+        onClose={() => setShowSnippetManager(false)}
+      />
+    </>
   );
 };

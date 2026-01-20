@@ -1,7 +1,10 @@
 import { useState, useEffect, useRef, useMemo } from 'react';
 import { Search, Command, ArrowRight, Globe } from 'lucide-react';
 import { useBookmarkStore } from '../store/useBookmarkStore';
+import { useSnippetStore } from '../store/useSnippetStore';
+import { useToastStore } from '../store/useToastStore';
 import { getFaviconUrls } from '../utils/favicon';
+import { Scissors } from 'lucide-react';
 
 interface SearchOverlayProps {
   isOpen: boolean;
@@ -11,10 +14,12 @@ interface SearchOverlayProps {
 interface SearchResult {
   id: string;
   title: string;
-  url: string;
+  url?: string;
   slotName: string;
-  slotIcon: string;
+  slotIcon?: string;
   description?: string;
+  type: 'bookmark' | 'snippet';
+  value?: string;
 }
 
 export const SearchOverlay = ({ isOpen, onClose }: SearchOverlayProps) => {
@@ -22,6 +27,8 @@ export const SearchOverlay = ({ isOpen, onClose }: SearchOverlayProps) => {
   const [selectedIndex, setSelectedIndex] = useState(0);
   const inputRef = useRef<HTMLInputElement>(null);
   const { slots } = useBookmarkStore();
+  const { snippets, settings } = useSnippetStore();
+  const { showToast } = useToastStore();
 
   useEffect(() => {
     if (isOpen) {
@@ -51,10 +58,25 @@ export const SearchOverlay = ({ isOpen, onClose }: SearchOverlayProps) => {
             slotName: slot.name,
             slotIcon: slot.icon,
             description: link.description,
+            type: 'bookmark',
           });
         }
       });
     });
+
+    if (settings.enabled) {
+      snippets.forEach((snippet) => {
+        if (snippet.key.toLowerCase().includes(searchTerm)) {
+          results.push({
+            id: snippet.id,
+            title: snippet.key,
+            slotName: 'Snippet',
+            type: 'snippet',
+            value: snippet.value,
+          });
+        }
+      });
+    }
 
     return results.slice(0, 8);
   }, [query, slots]);
@@ -72,8 +94,20 @@ export const SearchOverlay = ({ isOpen, onClose }: SearchOverlayProps) => {
       } else if (e.key === 'Enter' && results[selectedIndex]) {
         e.preventDefault();
         const result = results[selectedIndex];
-        window.location.href = result.url;
-        onClose();
+        if (result.type === 'bookmark' && result.url) {
+          window.location.href = result.url;
+          onClose();
+        } else if (result.type === 'snippet' && result.value) {
+          navigator.clipboard.writeText(result.value);
+          showToast(
+            <p>
+              Copied <code className="font-mono bg-interactive-primary/10 text-interactive-primary px-1.5 py-0.5 rounded text-xs leading-none">
+                {result.title}
+              </code> to clipboard
+            </p>
+          );
+          onClose();
+        }
       } else if (e.key === 'Escape') {
         onClose();
       }
@@ -125,23 +159,37 @@ export const SearchOverlay = ({ isOpen, onClose }: SearchOverlayProps) => {
               ) : (
                 <div className="space-y-1">
                   {results.map((result, index) => {
-                    const faviconUrls = getFaviconUrls(result.url);
-
                     return (
                       <a
                         key={result.id}
                         href={result.url}
-                        className={`flex items-center gap-3 px-3 py-2.5 rounded-control transition-colors cursor-pointer ${
-                          index === selectedIndex
-                            ? 'bg-interactive-selected'
-                            : 'hover:bg-bg-wash'
-                        }`}
-                        onClick={() => onClose()}
+                        className={`flex items-center gap-3 px-3 py-2.5 rounded-control transition-colors cursor-pointer ${index === selectedIndex
+                          ? 'bg-interactive-selected'
+                          : 'hover:bg-bg-wash'
+                          }`}
+                        onClick={(e) => {
+                          if (result.type === 'snippet' && result.value) {
+                            e.preventDefault();
+                            navigator.clipboard.writeText(result.value);
+                            showToast(
+                              <p>
+                                Copied <code className="font-mono bg-interactive-primary/10 text-interactive-primary px-1.5 py-0.5 rounded text-xs leading-none">
+                                  {result.title}
+                                </code> to clipboard
+                              </p>
+                            );
+                            onClose();
+                          } else {
+                            onClose();
+                          }
+                        }}
                       >
                         <div className="w-8 h-8 rounded-lg bg-bg-wash flex items-center justify-center shrink-0">
-                          {faviconUrls.length > 0 ? (
+                          {result.type === 'snippet' ? (
+                            <Scissors className="w-4 h-4 text-interactive-primary" />
+                          ) : result.url ? (
                             <img
-                              src={faviconUrls[0]}
+                              src={getFaviconUrls(result.url)[0]}
                               alt=""
                               className="w-4 h-4"
                               onError={(e) => {
