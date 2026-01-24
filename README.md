@@ -4,16 +4,34 @@
 [![Release](https://img.shields.io/github/v/release/okan/homeros?include_prereleases)](https://github.com/okan/homeros/releases)
 [![License](https://img.shields.io/github/license/okan/homeros)](./LICENSE)
 
-A modern Chrome New Tab extension for organizing bookmarks in named slots.
+A modern Chrome New Tab extension that centralizes bookmarks, tasks, habits, and fast search into a single start page.
 
 ## Features
 
-- 📂 Organize links in named slots
-- ✅ TODO list with deadlines
-- 🔥 Daily Habit Tracker
-- 🌓 Dark Mode support
+- 📂 Organize bookmarks into named slots with custom icons
+- 🧩 Enrich links with descriptions and tags
+- 🔎 Search quickly with keyboard navigation (⌘K / Ctrl+K)
+- ✅ Track TODOs with optional deadlines and urgency cues
+- 🔥 Build daily habits with streak visibility
+- ✂️ Store reusable text snippets for quick copy
 - 🔄 Drag & drop to reorder slots and links
-- ☁️ Chrome sync support
+- 🌓 Dark Mode support
+- 💾 Export and import your data
+- ☁️ Chrome sync for bookmarks and TODOs
+
+## Usage
+
+- Create slots in edit mode, then add links with titles, URLs, descriptions, and tags.
+- Use the top-right actions to search, open tasks, or manage snippets.
+- Press ⌘K / Ctrl+K to search and navigate results entirely by keyboard.
+- Toggle edit mode to rename slots, change icons, and reorder content.
+
+## Keyboard Shortcuts
+
+- ⌘/Ctrl+K — Open search
+- ⌘/Ctrl+E — Toggle edit mode
+- ⌘/Ctrl+T — Toggle tasks panel
+- Esc — Close overlays
 
 ## Installation
 
@@ -26,7 +44,7 @@ A modern Chrome New Tab extension for organizing bookmarks in named slots.
 5. Enable "Developer mode" (toggle in the top right)
 6. Click "Load unpacked"
 7. Select the extracted folder
-8. Open a new tab to see Homeros in action! 🎉
+8. Open a new tab to verify Homeros is active
 
 ### From Source
 
@@ -59,12 +77,13 @@ npm run build
 
 ## Privacy
 
-Homeros stores data using the Chrome Storage API:
+Homeros stores data locally and via the Chrome Storage API:
 
-- Locally via `chrome.storage.local`.
-- Optionally synced via `chrome.storage.sync` if Chrome sync is enabled on your browser profile.
+- Bookmarks and TODOs are saved to `chrome.storage.sync` (synced when Chrome sync is enabled).
+- Snippets are saved to `chrome.storage.local`.
+- Habits are stored in the browser's local storage via Zustand persist.
 
-No external servers, analytics, or network requests are used. The extension requests only the `storage` permission.
+Homeros does not use external servers, analytics. The extension requests only the `storage` permission.
 
 ## Contributing
 
