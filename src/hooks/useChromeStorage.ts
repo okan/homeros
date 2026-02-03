@@ -10,7 +10,15 @@ export const useChromeStorage = () => {
   useEffect(() => {
     const loadData = async () => {
       try {
-        const result = await chrome.storage.sync.get(STORAGE_KEY);
+        // One-time migration: sync -> local
+        const syncResult = await chrome.storage.sync.get(STORAGE_KEY);
+        if (syncResult[STORAGE_KEY]) {
+          await chrome.storage.local.set({ [STORAGE_KEY]: syncResult[STORAGE_KEY] });
+          await chrome.storage.sync.remove(STORAGE_KEY);
+        }
+
+        // Load from local storage
+        const result = await chrome.storage.local.get(STORAGE_KEY);
         if (result[STORAGE_KEY]) {
           loadFromStorage(result[STORAGE_KEY]);
         }
@@ -31,7 +39,7 @@ export const useChromeStorage = () => {
 
     const saveData = async () => {
       try {
-        await chrome.storage.sync.set({ [STORAGE_KEY]: slots });
+        await chrome.storage.local.set({ [STORAGE_KEY]: slots });
       } catch (error) {
         console.error('Failed to save to Chrome storage:', error);
       }

@@ -17,7 +17,7 @@ A modern Chrome New Tab extension that centralizes bookmarks, tasks, habits, and
 - 🔄 Drag & drop to reorder slots and links
 - 🌓 Dark Mode support
 - 💾 Export and import your data
-- ☁️ Chrome sync for bookmarks and TODOs
+- 💻 All data stored locally on your device
 
 ## Usage
 
@@ -77,13 +77,12 @@ npm run build
 
 ## Privacy
 
-Homeros stores data locally and via the Chrome Storage API:
+Homeros stores all data locally on your device:
 
-- Bookmarks and TODOs are saved to `chrome.storage.sync` (synced when Chrome sync is enabled).
-- Snippets are saved to `chrome.storage.local`.
+- Bookmarks, TODOs, and snippets are saved to `chrome.storage.local`.
 - Habits are stored in the browser's local storage via Zustand persist.
 
-Homeros does not use external servers, analytics. The extension requests only the `storage` permission.
+Homeros does not use external servers, analytics, or network requests. The extension requests only the `storage` permission.
 
 ## Contributing
 
