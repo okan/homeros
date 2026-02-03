@@ -1,5 +1,6 @@
 import { useEffect, useRef } from 'react';
 import { useBookmarkStore } from '../store/useBookmarkStore';
+import { useToastStore } from '../store/useToastStore';
 
 const STORAGE_KEY = 'homeros_bookmarks';
 
@@ -42,6 +43,11 @@ export const useChromeStorage = () => {
         await chrome.storage.local.set({ [STORAGE_KEY]: slots });
       } catch (error) {
         console.error('Failed to save to Chrome storage:', error);
+        useToastStore.getState().showToast(
+          'Failed to save bookmarks. Storage limit may be exceeded.',
+          4000,
+          'error'
+        );
       }
     };
 

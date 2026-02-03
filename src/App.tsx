@@ -60,7 +60,7 @@ function App() {
   const { slots, isEditMode, toggleEditMode, reorderSlots, reorderLinks } = useBookmarkStore();
   const { toggleTodoPanel, todos } = useTodoStore();
   const { settings: snippetSettings } = useSnippetStore();
-  const { message: toastMessage, isVisible: isToastVisible } = useToastStore();
+  const { message: toastMessage, isVisible: isToastVisible, type: toastType } = useToastStore();
 
   useKeyboardShortcuts({
     onSearch: () => setIsSearchOpen(true),
@@ -294,7 +294,7 @@ function App() {
         <OnboardingCarousel onComplete={completeOnboarding} />
       )}
 
-      <Toast message={toastMessage} isVisible={isToastVisible} />
+      <Toast message={toastMessage} isVisible={isToastVisible} type={toastType} />
     </div>
   );
 }

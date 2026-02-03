@@ -1,5 +1,6 @@
 import { useEffect, useRef } from 'react';
 import { useTodoStore } from '../store/useTodoStore';
+import { useToastStore } from '../store/useToastStore';
 
 const STORAGE_KEY = 'homeros_todos';
 
@@ -42,6 +43,11 @@ export const useTodoStorage = () => {
         await chrome.storage.local.set({ [STORAGE_KEY]: todos });
       } catch (error) {
         console.error('Failed to save todos to Chrome storage:', error);
+        useToastStore.getState().showToast(
+          'Failed to save tasks. Storage limit may be exceeded.',
+          4000,
+          'error'
+        );
       }
     };
 
