@@ -1,5 +1,17 @@
 import { create } from 'zustand';
-import type { TodoStore, Todo } from '../types';
+import type { Todo } from '../types';
+
+interface TodoStore {
+  todos: Todo[];
+  isTodoPanelOpen: boolean;
+  toggleTodoPanel: () => void;
+  addTodo: (text: string, deadline?: string) => void;
+  updateTodo: (id: string, text: string, deadline?: string) => void;
+  toggleTodo: (id: string) => void;
+  deleteTodo: (id: string) => void;
+  reorderTodos: (todos: Todo[]) => void;
+  loadTodosFromStorage: (data: Todo[]) => void;
+}
 
 export const useTodoStore = create<TodoStore>((set) => ({
   todos: [],

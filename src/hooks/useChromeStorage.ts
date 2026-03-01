@@ -1,58 +1,26 @@
-import { useEffect, useRef } from 'react';
+import { useCallback } from 'react';
 import { useBookmarkStore } from '../store/useBookmarkStore';
 import { useToastStore } from '../store/useToastStore';
-
-const STORAGE_KEY = 'homeros_bookmarks';
+import { useChromeStorageSync } from './useChromeStorageSync';
+import type { Slot } from '../types';
 
 export const useChromeStorage = () => {
-  const { slots, loadFromStorage } = useBookmarkStore();
-  const isInitialLoad = useRef(true);
+  const slots = useBookmarkStore((state) => state.slots);
+  const loadFromStorage = useBookmarkStore((state) => state.loadFromStorage);
 
-  useEffect(() => {
-    const loadData = async () => {
-      try {
-        // One-time migration: sync -> local
-        const syncResult = await chrome.storage.sync.get(STORAGE_KEY);
-        if (syncResult[STORAGE_KEY]) {
-          await chrome.storage.local.set({ [STORAGE_KEY]: syncResult[STORAGE_KEY] });
-          await chrome.storage.sync.remove(STORAGE_KEY);
-        }
+  const handleSaveError = useCallback(() => {
+    useToastStore.getState().showToast(
+      'Failed to save bookmarks. Storage limit may be exceeded.',
+      4000,
+      'error'
+    );
+  }, []);
 
-        // Load from local storage
-        const result = await chrome.storage.local.get(STORAGE_KEY);
-        if (result[STORAGE_KEY]) {
-          loadFromStorage(result[STORAGE_KEY]);
-        }
-        isInitialLoad.current = false;
-      } catch (error) {
-        console.error('Failed to load from Chrome storage:', error);
-        isInitialLoad.current = false;
-      }
-    };
-
-    loadData();
-  }, [loadFromStorage]);
-
-  useEffect(() => {
-    if (isInitialLoad.current) {
-      return;
-    }
-
-    const saveData = async () => {
-      try {
-        await chrome.storage.local.set({ [STORAGE_KEY]: slots });
-      } catch (error) {
-        console.error('Failed to save to Chrome storage:', error);
-        useToastStore.getState().showToast(
-          'Failed to save bookmarks. Storage limit may be exceeded.',
-          4000,
-          'error'
-        );
-      }
-    };
-
-    saveData();
-  }, [slots]);
-
-  return null;
+  useChromeStorageSync<Slot[]>({
+    key: 'homeros_bookmarks',
+    data: slots,
+    loadFromStorage,
+    onSaveError: handleSaveError,
+    migrateSyncToLocal: true,
+  });
 };

@@ -1,66 +1,32 @@
-import { useState, useEffect } from 'react';
-import {
-  DndContext,
-  rectIntersection,
-  KeyboardSensor,
-  PointerSensor,
-  useSensor,
-  useSensors,
-  DragEndEvent,
-} from '@dnd-kit/core';
-import {
-  arrayMove,
-  SortableContext,
-  sortableKeyboardCoordinates,
-  rectSortingStrategy,
-} from '@dnd-kit/sortable';
+import { useState, useEffect, useCallback } from 'react';
+import { useThemeStore } from './store/useThemeStore';
 import { useBookmarkStore } from './store/useBookmarkStore';
 import { useTodoStore } from './store/useTodoStore';
-import { useSnippetStore } from './store/useSnippetStore';
-import { useToastStore } from './store/useToastStore';
-import { useModalStore } from './store/useModalStore';
 import { useChromeStorage } from './hooks/useChromeStorage';
 import { useTodoStorage } from './hooks/useTodoStorage';
 import { useSnippetStorage } from './hooks/useSnippetStorage';
 import { useKeyboardShortcuts } from './hooks/useKeyboardShortcuts';
-import { Slot } from './components/Slot';
-import { AddSlotButton } from './components/AddSlotButton';
-import { EmptyState } from './components/EmptyState';
+import { Toolbar } from './components/Toolbar';
+import { BookmarkGrid } from './components/BookmarkGrid';
 import { TodoPanel } from './components/TodoPanel';
-import { AddLinkModal } from './components/AddLinkModal';
-import { EditLinkModal } from './components/EditLinkModal';
-import { ConfirmModal } from './components/ConfirmModal';
-import { SearchOverlay } from './components/SearchOverlay';
-import { SettingsModal } from './components/SettingsModal';
-import { OnboardingCarousel } from './components/OnboardingCarousel';
-import { Settings, Check, ListTodo, Search, Paintbrush, Scissors } from 'lucide-react';
-import { useThemeStore } from './store/useThemeStore';
-import { SnippetManagerModal } from './components/SnippetManagerModal';
-import { Toast } from './components/Toast';
-import { useOnboarding } from './hooks/useOnboarding';
+import { AppModals } from './components/AppModals';
 
 function App() {
-  const { isDarkMode } = useThemeStore();
+  const isDarkMode = useThemeStore((state) => state.isDarkMode);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [isSnippetManagerOpen, setIsSnippetManagerOpen] = useState(false);
-  const { showOnboarding, isLoading: isOnboardingLoading, completeOnboarding } = useOnboarding();
 
   useEffect(() => {
-    if (isDarkMode) {
-      document.documentElement.classList.add('dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-    }
+    document.documentElement.classList.toggle('dark', isDarkMode);
   }, [isDarkMode]);
 
   useChromeStorage();
   useTodoStorage();
   useSnippetStorage();
-  const { slots, isEditMode, toggleEditMode, reorderSlots, reorderLinks } = useBookmarkStore();
-  const { toggleTodoPanel, todos } = useTodoStore();
-  const { settings: snippetSettings } = useSnippetStore();
-  const { message: toastMessage, isVisible: isToastVisible, type: toastType } = useToastStore();
+
+  const toggleEditMode = useBookmarkStore((state) => state.toggleEditMode);
+  const toggleTodoPanel = useTodoStore((state) => state.toggleTodoPanel);
 
   useKeyboardShortcuts({
     onSearch: () => setIsSearchOpen(true),
@@ -68,55 +34,10 @@ function App() {
     onToggleTodoPanel: toggleTodoPanel,
     onEscape: () => setIsSearchOpen(false),
   });
-  const {
-    isAddLinkModalOpen,
-    addLinkSlotId,
-    closeAddLinkModal,
-    isConfirmModalOpen,
-    confirmTitle,
-    confirmMessage,
-    confirmAction,
-    closeConfirmModal,
-  } = useModalStore();
 
-  const sensors = useSensors(
-    useSensor(PointerSensor),
-    useSensor(KeyboardSensor, {
-      coordinateGetter: sortableKeyboardCoordinates,
-    }),
-  );
-
-  const handleDragEnd = (event: DragEndEvent) => {
-    const { active, over } = event;
-
-    if (!over || active.id === over.id) {
-      return;
-    }
-
-    const activeSlot = slots.find((s) => s.id === active.id);
-    const overSlot = slots.find((s) => s.id === over.id);
-
-    if (activeSlot && overSlot) {
-      const oldIndex = slots.findIndex((s) => s.id === active.id);
-      const newIndex = slots.findIndex((s) => s.id === over.id);
-      const newSlots = arrayMove(slots, oldIndex, newIndex);
-      reorderSlots(newSlots);
-      return;
-    }
-
-    for (const slot of slots) {
-      const activeLink = slot.links.find((l) => l.id === active.id);
-      const overLink = slot.links.find((l) => l.id === over.id);
-
-      if (activeLink && overLink) {
-        const oldIndex = slot.links.findIndex((l) => l.id === active.id);
-        const newIndex = slot.links.findIndex((l) => l.id === over.id);
-        const newLinks = arrayMove(slot.links, oldIndex, newIndex);
-        reorderLinks(slot.id, newLinks);
-        return;
-      }
-    }
-  };
+  const handleCloseSearch = useCallback(() => setIsSearchOpen(false), []);
+  const handleCloseSettings = useCallback(() => setIsSettingsOpen(false), []);
+  const handleCloseSnippetManager = useCallback(() => setIsSnippetManagerOpen(false), []);
 
   return (
     <div className="min-h-screen">
@@ -126,175 +47,24 @@ function App() {
 
       <TodoPanel />
 
-      <div className="fixed top-coarse right-coarse z-50 flex items-center gap-fine">
-        {!isEditMode && (
-          <>
-            <button
-              onClick={() => setIsSearchOpen(true)}
-              className="flex items-center gap-fine px-[10px] py-2 rounded-control transition-all bg-transparent text-text-secondary hover:bg-bg-content hover:text-text-primary"
-              title="Search (⌘K)"
-            >
-              <Search className="w-5 h-5" />
-            </button>
-
-            <button
-              onClick={toggleTodoPanel}
-              className="flex items-center gap-fine px-[10px] py-2 rounded-control transition-all bg-transparent text-text-secondary hover:bg-bg-content hover:text-text-primary"
-            >
-              <ListTodo className="w-5 h-5" />
-              <span className="text-value font-medium">TODOs</span>
-              {(() => {
-                const now = new Date();
-                now.setHours(0, 0, 0, 0);
-                const counts = todos.reduce(
-                  (acc, t) => {
-                    if (!t.deadline || t.completed) return acc;
-                    const d = new Date(t.deadline);
-                    d.setHours(0, 0, 0, 0);
-                    const diffDays = Math.ceil((d.getTime() - now.getTime()) / 86400000);
-                    if (diffDays < 0) return acc;
-                    if (diffDays <= 1) acc.red += 1;
-                    else if (diffDays < 3) acc.yellow += 1;
-                    return acc;
-                  },
-                  { red: 0, yellow: 0 },
-                );
-                return (
-                  <>
-                    {counts.yellow > 0 && (
-                      <span className="inline-flex items-center justify-center rounded-full min-w-[18px] h-[18px] px-[6px] text-[11px] font-bold bg-yellow-500 text-white">
-                        {counts.yellow}
-                      </span>
-                    )}
-                    {counts.red > 0 && (
-                      <span className="inline-flex items-center justify-center rounded-full min-w-[18px] h-[18px] px-[6px] text-[11px] font-bold bg-red-500 text-white">
-                        {counts.red}
-                      </span>
-                    )}
-                  </>
-                );
-              })()}
-            </button>
-
-            {snippetSettings.enabled && (
-              <button
-                onClick={() => setIsSnippetManagerOpen(true)}
-                className="flex items-center gap-fine px-[10px] py-2 rounded-control transition-all bg-transparent text-text-secondary hover:bg-bg-content hover:text-text-primary"
-                title="Snippets"
-              >
-                <Scissors className="w-5 h-5" />
-                <span className="text-value font-medium">Snippets</span>
-              </button>
-            )}
-          </>
-        )}
-
-        <button
-          onClick={toggleEditMode}
-          className={`flex items-center gap-fine px-[10px] py-2 rounded-control transition-all ${isEditMode
-            ? 'bg-interactive-primary text-white hover:bg-interactive-primary-hover shadow-card-sm'
-            : 'bg-transparent text-text-secondary hover:bg-bg-content hover:text-text-primary'
-            }`}
-        >
-          {isEditMode ? (
-            <>
-              <Check className="w-5 h-5" />
-              <span className="text-value font-medium">Done</span>
-            </>
-          ) : (
-            <>
-              <Paintbrush className="w-5 h-5" />
-              <span className="text-value font-medium">Customize</span>
-            </>
-          )}
-        </button>
-
-        {!isEditMode && (
-          <button
-            onClick={() => setIsSettingsOpen(true)}
-            className="flex items-center gap-fine px-[10px] py-2 rounded-control transition-all bg-transparent text-text-secondary hover:bg-bg-content hover:text-text-primary"
-            title="Settings"
-          >
-            <Settings className="w-5 h-5" />
-          </button>
-        )}
-      </div>
+      <Toolbar
+        onOpenSearch={() => setIsSearchOpen(true)}
+        onOpenSettings={() => setIsSettingsOpen(true)}
+        onOpenSnippetManager={() => setIsSnippetManagerOpen(true)}
+      />
 
       <main id="main-content" className="max-w-7xl mx-auto px-page py-section min-h-screen flex flex-col justify-center" role="main">
-        {slots.length === 0 ? (
-          <>
-            {!isEditMode && <EmptyState />}
-            {isEditMode && (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-coarse">
-                <AddSlotButton />
-              </div>
-            )}
-          </>
-        ) : (
-          <DndContext
-            sensors={sensors}
-            collisionDetection={rectIntersection}
-            onDragEnd={handleDragEnd}
-          >
-            <SortableContext
-              items={slots.map((slot) => slot.id)}
-              strategy={rectSortingStrategy}
-            >
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-coarse">
-                {slots.map((slot, index) => (
-                  <div
-                    key={slot.id}
-                    className="animate-fade-in-up"
-                    style={{ animationDelay: `${index * 50}ms` }}
-                  >
-                    <Slot slot={slot} isEditMode={isEditMode} />
-                  </div>
-                ))}
-                {isEditMode && (
-                  <div className="animate-fade-in-up" style={{ animationDelay: `${slots.length * 50}ms` }}>
-                    <AddSlotButton />
-                  </div>
-                )}
-              </div>
-            </SortableContext>
-          </DndContext>
-        )}
+        <BookmarkGrid />
       </main>
 
-      {addLinkSlotId && (
-        <AddLinkModal
-          isOpen={isAddLinkModalOpen}
-          onClose={closeAddLinkModal}
-          slotId={addLinkSlotId}
-        />
-      )}
-
-      <EditLinkModal />
-
-      <SearchOverlay isOpen={isSearchOpen} onClose={() => setIsSearchOpen(false)} />
-
-      <SettingsModal isOpen={isSettingsOpen} onClose={() => setIsSettingsOpen(false)} />
-
-      <SnippetManagerModal
-        isOpen={isSnippetManagerOpen}
-        onClose={() => setIsSnippetManagerOpen(false)}
+      <AppModals
+        isSearchOpen={isSearchOpen}
+        onCloseSearch={handleCloseSearch}
+        isSettingsOpen={isSettingsOpen}
+        onCloseSettings={handleCloseSettings}
+        isSnippetManagerOpen={isSnippetManagerOpen}
+        onCloseSnippetManager={handleCloseSnippetManager}
       />
-
-      <ConfirmModal
-        isOpen={isConfirmModalOpen}
-        onClose={closeConfirmModal}
-        onConfirm={() => {
-          if (confirmAction) confirmAction();
-        }}
-        title={confirmTitle}
-        message={confirmMessage}
-      />
-
-      {!isOnboardingLoading && showOnboarding && (
-        <OnboardingCarousel onComplete={completeOnboarding} />
-      )}
-
-      <Toast message={toastMessage} isVisible={isToastVisible} type={toastType} />
     </div>
   );
 }

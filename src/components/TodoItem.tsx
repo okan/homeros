@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Trash2, Edit2, Check, X, Calendar } from 'lucide-react';
 import { useTodoStore } from '../store/useTodoStore';
+import { getDiffDays, formatDeadline } from '../utils/deadline';
 import type { Todo } from '../types';
 
 interface TodoItemProps {
@@ -28,34 +29,8 @@ export const TodoItem = ({ todo, showUrgencyGutter }: TodoItemProps) => {
     setIsEditing(false);
   };
 
-  const formatDeadline = (deadline: string) => {
-    const date = new Date(deadline);
-    const today = new Date();
-    const tomorrow = new Date(today);
-    tomorrow.setDate(tomorrow.getDate() + 1);
-
-    today.setHours(0, 0, 0, 0);
-    tomorrow.setHours(0, 0, 0, 0);
-    date.setHours(0, 0, 0, 0);
-
-    if (date.getTime() === today.getTime()) return 'Today';
-    if (date.getTime() === tomorrow.getTime()) return 'Tomorrow';
-    if (date < today) return 'Overdue';
-
-    return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-  };
-
-  const isOverdue = todo.deadline && new Date(todo.deadline) < new Date() && !todo.completed;
-
-  const computeDiffDays = () => {
-    if (!todo.deadline) return undefined;
-    const now = new Date();
-    const d = new Date(todo.deadline);
-    now.setHours(0, 0, 0, 0);
-    d.setHours(0, 0, 0, 0);
-    return Math.ceil((d.getTime() - now.getTime()) / 86400000);
-  };
-  const diffDays = computeDiffDays();
+  const diffDays = todo.deadline ? getDiffDays(todo.deadline) : undefined;
+  const isOverdue = todo.deadline && diffDays !== undefined && diffDays < 0 && !todo.completed;
   const isUrgentRed = !todo.completed && diffDays !== undefined && diffDays >= 0 && diffDays <= 1;
   const isUrgentYellow = !todo.completed && diffDays !== undefined && diffDays >= 2 && diffDays < 3;
   const deadlineClass = isOverdue

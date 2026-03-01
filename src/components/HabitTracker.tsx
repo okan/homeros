@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { useHabitStore } from '../store/useHabitStore';
 import { Plus, X, Check, Flame, TrendingUp } from 'lucide-react';
-import confetti from 'canvas-confetti';
 import { format, subDays, parseISO, differenceInDays } from 'date-fns';
 
 const calculateStreak = (completedDates: string[]): number => {
@@ -47,9 +46,10 @@ export const HabitTracker = () => {
 
     const today = format(new Date(), 'yyyy-MM-dd');
 
-    const handleToggle = (id: string, isCompleted: boolean) => {
+    const handleToggle = async (id: string, isCompleted: boolean) => {
         toggleHabit(id, today);
         if (!isCompleted) {
+            const { default: confetti } = await import('canvas-confetti');
             confetti({
                 particleCount: 100,
                 spread: 70,

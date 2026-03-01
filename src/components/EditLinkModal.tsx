@@ -1,18 +1,11 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect } from 'react';
 import { Check, AlertCircle } from 'lucide-react';
 import { Modal } from './Modal';
 import { TagInput } from './TagInput';
 import { useBookmarkStore } from '../store/useBookmarkStore';
 import { useModalStore } from '../store/useModalStore';
-
-const isValidUrl = (string: string): boolean => {
-  try {
-    const url = new URL(string);
-    return url.protocol === 'http:' || url.protocol === 'https:';
-  } catch {
-    return false;
-  }
-};
+import { isValidUrl } from '../utils/url';
+import { useAllTags } from '../hooks/useAllTags';
 
 export const EditLinkModal = () => {
   const { isEditLinkModalOpen, editLinkSlotId, editLinkId, editLinkData, closeEditLinkModal } =
@@ -22,17 +15,8 @@ export const EditLinkModal = () => {
   const [url, setUrl] = useState('');
   const [description, setDescription] = useState('');
   const [tags, setTags] = useState<string[]>([]);
-  const [urlError, setUrlError] = useState('');
   const updateLink = useBookmarkStore((state) => state.updateLink);
-  const slots = useBookmarkStore((state) => state.slots);
-
-  const allTags = useMemo(() => {
-    const tagSet = new Set<string>();
-    slots.forEach((slot) =>
-      slot.links.forEach((link) => link.tags?.forEach((tag) => tagSet.add(tag)))
-    );
-    return Array.from(tagSet).sort();
-  }, [slots]);
+  const allTags = useAllTags();
 
   useEffect(() => {
     if (editLinkData) {
@@ -43,13 +27,7 @@ export const EditLinkModal = () => {
     }
   }, [editLinkData]);
 
-  useEffect(() => {
-    if (url && !isValidUrl(url) && url.length > 5) {
-      setUrlError('Please enter a valid URL');
-    } else {
-      setUrlError('');
-    }
-  }, [url]);
+  const urlError = url && !isValidUrl(url) && url.length > 5 ? 'Please enter a valid URL' : '';
 
   const handleUrlBlur = () => {
     if (url && !url.startsWith('http://') && !url.startsWith('https://')) {
@@ -77,7 +55,6 @@ export const EditLinkModal = () => {
     setUrl('');
     setDescription('');
     setTags([]);
-    setUrlError('');
     closeEditLinkModal();
   };
 

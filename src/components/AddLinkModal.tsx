@@ -1,8 +1,10 @@
-import { useState, useEffect, useCallback, useMemo } from 'react';
+import { useState, useCallback } from 'react';
 import { Check, AlertCircle, Sparkles } from 'lucide-react';
 import { Modal } from './Modal';
 import { TagInput } from './TagInput';
 import { useBookmarkStore } from '../store/useBookmarkStore';
+import { isValidUrl, getDomainFromUrl } from '../utils/url';
+import { useAllTags } from '../hooks/useAllTags';
 
 interface AddLinkModalProps {
   isOpen: boolean;
@@ -10,40 +12,14 @@ interface AddLinkModalProps {
   slotId: string;
 }
 
-const isValidUrl = (string: string): boolean => {
-  try {
-    const url = new URL(string);
-    return url.protocol === 'http:' || url.protocol === 'https:';
-  } catch {
-    return false;
-  }
-};
-
-const getDomainFromUrl = (url: string): string => {
-  try {
-    return new URL(url).hostname.replace('www.', '');
-  } catch {
-    return '';
-  }
-};
-
 export const AddLinkModal = ({ isOpen, onClose, slotId }: AddLinkModalProps) => {
   const [title, setTitle] = useState('');
   const [url, setUrl] = useState('');
   const [description, setDescription] = useState('');
   const [tags, setTags] = useState<string[]>([]);
-  const [urlError, setUrlError] = useState('');
   const [titleSuggested, setTitleSuggested] = useState(false);
   const addLink = useBookmarkStore((state) => state.addLink);
-  const slots = useBookmarkStore((state) => state.slots);
-
-  const allTags = useMemo(() => {
-    const tagSet = new Set<string>();
-    slots.forEach((slot) =>
-      slot.links.forEach((link) => link.tags?.forEach((tag) => tagSet.add(tag)))
-    );
-    return Array.from(tagSet).sort();
-  }, [slots]);
+  const allTags = useAllTags();
 
   const suggestTitleFromUrl = useCallback((inputUrl: string) => {
     if (!title && isValidUrl(inputUrl)) {
@@ -56,13 +32,7 @@ export const AddLinkModal = ({ isOpen, onClose, slotId }: AddLinkModalProps) => 
     }
   }, [title]);
 
-  useEffect(() => {
-    if (url && !isValidUrl(url) && url.length > 5) {
-      setUrlError('Please enter a valid URL');
-    } else {
-      setUrlError('');
-    }
-  }, [url]);
+  const urlError = url && !isValidUrl(url) && url.length > 5 ? 'Please enter a valid URL' : '';
 
   const handleUrlBlur = () => {
     if (url && !url.startsWith('http://') && !url.startsWith('https://')) {
@@ -98,7 +68,6 @@ export const AddLinkModal = ({ isOpen, onClose, slotId }: AddLinkModalProps) => 
     setUrl('');
     setDescription('');
     setTags([]);
-    setUrlError('');
     setTitleSuggested(false);
     onClose();
   };

@@ -1,4 +1,4 @@
-import { useEffect, useCallback } from 'react';
+import { useEffect, useRef } from 'react';
 
 interface ShortcutHandlers {
   onSearch?: () => void;
@@ -8,36 +8,36 @@ interface ShortcutHandlers {
 }
 
 export const useKeyboardShortcuts = (handlers: ShortcutHandlers) => {
-  const handleKeyDown = useCallback(
-    (event: KeyboardEvent) => {
+  const handlersRef = useRef(handlers);
+  handlersRef.current = handlers;
+
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
       if ((event.metaKey || event.ctrlKey) && event.key === 'k') {
         event.preventDefault();
-        handlers.onSearch?.();
+        handlersRef.current.onSearch?.();
         return;
       }
 
       if ((event.metaKey || event.ctrlKey) && event.key === 'e') {
         event.preventDefault();
-        handlers.onToggleEditMode?.();
+        handlersRef.current.onToggleEditMode?.();
         return;
       }
 
       if ((event.metaKey || event.ctrlKey) && event.key === 't') {
         event.preventDefault();
-        handlers.onToggleTodoPanel?.();
+        handlersRef.current.onToggleTodoPanel?.();
         return;
       }
 
       if (event.key === 'Escape') {
-        handlers.onEscape?.();
+        handlersRef.current.onEscape?.();
         return;
       }
-    },
-    [handlers]
-  );
+    };
 
-  useEffect(() => {
     document.addEventListener('keydown', handleKeyDown);
     return () => document.removeEventListener('keydown', handleKeyDown);
-  }, [handleKeyDown]);
+  }, []);
 };

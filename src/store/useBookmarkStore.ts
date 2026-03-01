@@ -1,5 +1,20 @@
 import { create } from 'zustand';
-import type { BookmarkStore, Slot, Link } from '../types';
+import type { Slot, Link } from '../types';
+
+interface BookmarkStore {
+  slots: Slot[];
+  isEditMode: boolean;
+  toggleEditMode: () => void;
+  addSlot: (name: string, icon: string) => void;
+  updateSlot: (id: string, name: string, icon: string) => void;
+  deleteSlot: (id: string) => void;
+  reorderSlots: (slots: Slot[]) => void;
+  addLink: (slotId: string, title: string, url: string, description?: string, tags?: string[]) => void;
+  updateLink: (slotId: string, linkId: string, title: string, url: string, description?: string, tags?: string[]) => void;
+  deleteLink: (slotId: string, linkId: string) => void;
+  reorderLinks: (slotId: string, links: Link[]) => void;
+  loadFromStorage: (data: Slot[]) => void;
+}
 
 export const useBookmarkStore = create<BookmarkStore>((set) => ({
   slots: [],

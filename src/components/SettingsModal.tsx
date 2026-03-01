@@ -1,5 +1,5 @@
 import { useState, useRef } from 'react';
-import { Download, Upload, AlertCircle, CheckCircle2, Moon, Sun } from 'lucide-react';
+import { Download, Upload, AlertCircle, CheckCircle2, Moon, Sun, Scissors } from 'lucide-react';
 import { Modal } from './Modal';
 import { useBookmarkStore } from '../store/useBookmarkStore';
 import { useTodoStore } from '../store/useTodoStore';
@@ -7,8 +7,6 @@ import { useHabitStore } from '../store/useHabitStore';
 import { useThemeStore } from '../store/useThemeStore';
 import { useSnippetStore } from '../store/useSnippetStore';
 import { useModalStore } from '../store/useModalStore';
-import { Scissors } from 'lucide-react';
-import { SnippetManagerModal } from './SnippetManagerModal';
 import {
   createExportData,
   downloadExport,
@@ -44,7 +42,6 @@ export const SettingsModal = ({ isOpen, onClose }: SettingsModalProps) => {
   const { isDarkMode, setTheme } = useThemeStore();
   const { snippets, settings, setSnippetsEnabled, clearSnippets } = useSnippetStore();
   const { openConfirmModal } = useModalStore();
-  const [showSnippetManager, setShowSnippetManager] = useState(false);
 
   const handleExport = () => {
     const exportData = createExportData(slots, todos, habits);
@@ -384,15 +381,8 @@ export const SettingsModal = ({ isOpen, onClose }: SettingsModalProps) => {
   };
 
   return (
-    <>
-      <Modal isOpen={isOpen} onClose={handleClose} title={getTitle()}>
-        {renderContent()}
-      </Modal>
-
-      <SnippetManagerModal
-        isOpen={showSnippetManager}
-        onClose={() => setShowSnippetManager(false)}
-      />
-    </>
+    <Modal isOpen={isOpen} onClose={handleClose} title={getTitle()}>
+      {renderContent()}
+    </Modal>
   );
 };

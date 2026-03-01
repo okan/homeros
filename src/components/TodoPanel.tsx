@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { X, Plus, Calendar } from 'lucide-react';
 import { useTodoStore } from '../store/useTodoStore';
+import { hasUrgentTodos as checkUrgentTodos } from '../utils/deadline';
 import { TodoItem } from './TodoItem';
 import { HabitTracker } from './HabitTracker';
 
@@ -16,17 +17,7 @@ export const TodoPanel = () => {
   const [newTodoDeadline, setNewTodoDeadline] = useState('');
   const [showDeadline, setShowDeadline] = useState(false);
 
-  const hasUrgentTodos = (() => {
-    const now = new Date();
-    now.setHours(0, 0, 0, 0);
-    return todos.some((t) => {
-      if (!t.deadline || t.completed) return false;
-      const d = new Date(t.deadline);
-      d.setHours(0, 0, 0, 0);
-      const diffDays = Math.ceil((d.getTime() - now.getTime()) / 86400000);
-      return diffDays >= 0 && diffDays < 3;
-    });
-  })();
+  const urgentTodosExist = checkUrgentTodos(todos);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -116,7 +107,7 @@ export const TodoPanel = () => {
                 <TodoItem
                   key={todo.id}
                   todo={todo}
-                  showUrgencyGutter={hasUrgentTodos}
+                  showUrgencyGutter={urgentTodosExist}
                 />
               ))
             )}

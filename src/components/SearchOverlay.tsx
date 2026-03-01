@@ -1,10 +1,9 @@
 import { useState, useEffect, useRef, useMemo } from 'react';
-import { Search, Command, ArrowRight, Globe } from 'lucide-react';
+import { Search, Command, ArrowRight, Globe, Scissors } from 'lucide-react';
 import { useBookmarkStore } from '../store/useBookmarkStore';
 import { useSnippetStore } from '../store/useSnippetStore';
 import { useToastStore } from '../store/useToastStore';
 import { getFaviconUrls } from '../utils/favicon';
-import { Scissors } from 'lucide-react';
 
 interface SearchOverlayProps {
   isOpen: boolean;
@@ -79,7 +78,7 @@ export const SearchOverlay = ({ isOpen, onClose }: SearchOverlayProps) => {
     }
 
     return results.slice(0, 8);
-  }, [query, slots]);
+  }, [query, slots, snippets, settings]);
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {

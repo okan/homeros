@@ -1,58 +1,26 @@
-import { useEffect, useRef } from 'react';
+import { useCallback } from 'react';
 import { useTodoStore } from '../store/useTodoStore';
 import { useToastStore } from '../store/useToastStore';
-
-const STORAGE_KEY = 'homeros_todos';
+import { useChromeStorageSync } from './useChromeStorageSync';
+import type { Todo } from '../types';
 
 export const useTodoStorage = () => {
-  const { todos, loadTodosFromStorage } = useTodoStore();
-  const isInitialLoad = useRef(true);
+  const todos = useTodoStore((state) => state.todos);
+  const loadTodosFromStorage = useTodoStore((state) => state.loadTodosFromStorage);
 
-  useEffect(() => {
-    const loadData = async () => {
-      try {
-        // One-time migration: sync -> local
-        const syncResult = await chrome.storage.sync.get(STORAGE_KEY);
-        if (syncResult[STORAGE_KEY]) {
-          await chrome.storage.local.set({ [STORAGE_KEY]: syncResult[STORAGE_KEY] });
-          await chrome.storage.sync.remove(STORAGE_KEY);
-        }
+  const handleSaveError = useCallback(() => {
+    useToastStore.getState().showToast(
+      'Failed to save tasks. Storage limit may be exceeded.',
+      4000,
+      'error'
+    );
+  }, []);
 
-        // Load from local storage
-        const result = await chrome.storage.local.get(STORAGE_KEY);
-        if (result[STORAGE_KEY]) {
-          loadTodosFromStorage(result[STORAGE_KEY]);
-        }
-        isInitialLoad.current = false;
-      } catch (error) {
-        console.error('Failed to load todos from Chrome storage:', error);
-        isInitialLoad.current = false;
-      }
-    };
-
-    loadData();
-  }, [loadTodosFromStorage]);
-
-  useEffect(() => {
-    if (isInitialLoad.current) {
-      return;
-    }
-
-    const saveData = async () => {
-      try {
-        await chrome.storage.local.set({ [STORAGE_KEY]: todos });
-      } catch (error) {
-        console.error('Failed to save todos to Chrome storage:', error);
-        useToastStore.getState().showToast(
-          'Failed to save tasks. Storage limit may be exceeded.',
-          4000,
-          'error'
-        );
-      }
-    };
-
-    saveData();
-  }, [todos]);
-
-  return null;
+  useChromeStorageSync<Todo[]>({
+    key: 'homeros_todos',
+    data: todos,
+    loadFromStorage: loadTodosFromStorage,
+    onSaveError: handleSaveError,
+    migrateSyncToLocal: true,
+  });
 };
