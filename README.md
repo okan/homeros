@@ -62,18 +62,34 @@ npm run build
 # Load the 'dist' folder as an unpacked extension in Chrome
 ```
 
+## Tech Stack
+
+- **Runtime**: React 18, TypeScript
+- **Bundler**: Vite 7 + [@crxjs/vite-plugin](https://crxjs.dev/vite-plugin)
+- **State**: Zustand
+- **Styling**: Tailwind CSS
+- **DnD**: @dnd-kit
+- **Testing**: Playwright (E2E)
+- **CI**: GitHub Actions
+
 ## Development
 
 ```bash
-# Install dependencies
 npm install
-
-# Run development server
 npm run dev
-
-# Build for production
-npm run build
 ```
+
+### Available Scripts
+
+| Command               | Description                     |
+| --------------------- | ------------------------------- |
+| `npm run dev`         | Start development server        |
+| `npm run build`       | Type-check and production build |
+| `npm run type-check`  | Run TypeScript type checking    |
+| `npm run lint`        | Lint with ESLint                |
+| `npm run format`      | Format with Prettier            |
+| `npm run test:e2e`    | Run Playwright E2E tests        |
+| `npm run test:e2e:ui` | Open Playwright UI mode         |
 
 ## Privacy
 

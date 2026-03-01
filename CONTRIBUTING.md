@@ -21,17 +21,19 @@ Thanks for your interest in contributing! This guide explains how to propose cha
    - Lint: `npm run lint`
    - Format: `npm run format`
    - Build: `npm run build`
+   - E2E tests: `npm run test:e2e`
+   - E2E tests (UI): `npm run test:e2e:ui`
 
 ## Code Style
 
-- TypeScript, React 18, Vite 5
+- TypeScript, React 18, Vite 7
 - ESLint + Prettier are enforced
 - Pre-commit runs `lint-staged` (ESLint/Prettier). Please keep the repo formatted.
 
 ## Making Changes
 
 - Keep PRs focused and small when possible.
-- Add or update tests if/when a test setup is added in the future.
+- Add or update Playwright E2E tests for new features or bug fixes.
 - Chrome Extension specifics:
   - Manifest is generated from `manifest.ts` (version comes from `package.json`).
   - Use the `storage` API responsibly; no external analytics or tracking.
@@ -44,7 +46,7 @@ Thanks for your interest in contributing! This guide explains how to propose cha
 ## Pull Requests
 
 - Target branch: `main`
-- Ensure CI passes (type-check, lint, build)
+- Ensure CI passes (type-check, lint, build, E2E tests)
 - Include a clear description of the change and rationale
 - If visual changes, include screenshots or a short clip when possible
 
