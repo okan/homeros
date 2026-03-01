@@ -114,7 +114,7 @@ export const SearchOverlay = ({ isOpen, onClose }: SearchOverlayProps) => {
 
     document.addEventListener('keydown', handleKeyDown);
     return () => document.removeEventListener('keydown', handleKeyDown);
-  }, [isOpen, results, selectedIndex, onClose]);
+  }, [isOpen, results, selectedIndex, onClose, showToast]);
 
   useEffect(() => {
     setSelectedIndex(0);
