@@ -5,7 +5,7 @@ import reactHooks from 'eslint-plugin-react-hooks';
 import eslintConfigPrettier from 'eslint-config-prettier';
 
 export default [
-  { ignores: ['dist/**', 'node_modules/**'] },
+  { ignores: ['dist/**', 'node_modules/**', 'e2e/**', 'playwright.config.ts'] },
   {
     files: ['**/*.{js,mjs,cjs,jsx}'],
     ...js.configs.recommended,
