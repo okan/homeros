@@ -1,5 +1,5 @@
 import { X } from 'lucide-react';
-import { ReactNode, useEffect, useRef } from 'react';
+import { ReactNode, useCallback, useEffect, useRef } from 'react';
 
 interface ModalProps {
   isOpen: boolean;
@@ -11,6 +11,15 @@ interface ModalProps {
 export const Modal = ({ isOpen, onClose, title, children }: ModalProps) => {
   const modalRef = useRef<HTMLDivElement>(null);
   const closeButtonRef = useRef<HTMLButtonElement>(null);
+  const onCloseRef = useRef(onClose);
+
+  useEffect(() => {
+    onCloseRef.current = onClose;
+  });
+
+  const stableOnClose = useCallback(() => {
+    onCloseRef.current();
+  }, []);
 
   useEffect(() => {
     if (!isOpen) return;
@@ -19,13 +28,13 @@ export const Modal = ({ isOpen, onClose, title, children }: ModalProps) => {
 
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
-        onClose();
+        onCloseRef.current();
       }
     };
 
     document.addEventListener('keydown', handleKeyDown);
     return () => document.removeEventListener('keydown', handleKeyDown);
-  }, [isOpen, onClose]);
+  }, [isOpen]);
 
   if (!isOpen) return null;
 
@@ -33,7 +42,7 @@ export const Modal = ({ isOpen, onClose, title, children }: ModalProps) => {
     <>
       <div 
         className="fixed inset-0 bg-black/30 z-50 transition-opacity" 
-        onClick={onClose}
+        onClick={stableOnClose}
         aria-hidden="true"
       />
       <div 
@@ -51,7 +60,7 @@ export const Modal = ({ isOpen, onClose, title, children }: ModalProps) => {
             <h2 id="modal-title" className="text-header3 text-text-primary font-semibold">{title}</h2>
             <button
               ref={closeButtonRef}
-              onClick={onClose}
+              onClick={stableOnClose}
               className="p-fine text-icon-placeholder hover:text-text-primary transition-colors rounded-control hover:bg-bg-wash focus:outline-none focus-visible:ring-2 focus-visible:ring-interactive-primary"
               aria-label="Close modal"
             >
