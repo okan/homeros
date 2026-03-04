@@ -1,109 +1,99 @@
-# Homeros
+<p align="center">
+  <img src="public/icon-128.png" alt="Homeros" width="80" height="80" />
+</p>
 
-[![CI](https://github.com/okan/homeros/actions/workflows/ci.yml/badge.svg)](https://github.com/okan/homeros/actions/workflows/ci.yml)
-[![Release](https://img.shields.io/github/v/release/okan/homeros?include_prereleases)](https://github.com/okan/homeros/releases)
-[![License](https://img.shields.io/github/license/okan/homeros)](./LICENSE)
+<h1 align="center">Homeros</h1>
 
-A modern Chrome New Tab extension that centralizes bookmarks, tasks, habits, and fast search into a single start page.
+<p align="center">
+  Your <strong>New Tab</strong> page — beautifully organized bookmarks, todos, habits, and more.
+</p>
+
+<p align="center">
+  <img src="https://img.shields.io/github/v/tag/okan/homeros?label=version&style=flat-square" alt="Version" />
+  <img src="https://img.shields.io/github/actions/workflow/status/okan/homeros/ci.yml?branch=main&style=flat-square&label=CI" alt="CI" />
+  <img src="https://img.shields.io/github/license/okan/homeros?style=flat-square" alt="License" />
+</p>
+
+---
 
 ## Features
 
-- 📂 Organize bookmarks into named slots with custom icons
-- 🧩 Enrich links with descriptions and tags
-- 🔎 Search quickly with keyboard navigation (⌘K / Ctrl+K)
-- ✅ Track TODOs with optional deadlines and urgency cues
-- 🔥 Build daily habits with streak visibility
-- ✂️ Store reusable text snippets for quick copy
-- 🔄 Drag & drop to reorder slots and links
-- 🌓 Dark Mode support
-- 💾 Export and import your data
-- 💻 All data stored locally on your device
-
-## Usage
-
-- Create slots in edit mode, then add links with titles, URLs, descriptions, and tags.
-- Use the top-right actions to search, open tasks, or manage snippets.
-- Press ⌘K / Ctrl+K to search and navigate results entirely by keyboard.
-- Toggle edit mode to rename slots, change icons, and reorder content.
-
-## Keyboard Shortcuts
-
-- ⌘/Ctrl+K — Open search
-- ⌘/Ctrl+E — Toggle edit mode
-- ⌘/Ctrl+T — Toggle tasks panel
-- Esc — Close overlays
-
-## Installation
-
-### From Release (Recommended)
-
-1. Go to the [Releases](https://github.com/okan/homeros/releases) page
-2. Download the latest `homeros.zip`
-3. Extract the ZIP file to a folder on your computer
-4. Open Chrome and navigate to `chrome://extensions/`
-5. Enable "Developer mode" (toggle in the top right)
-6. Click "Load unpacked"
-7. Select the extracted folder
-8. Open a new tab to verify Homeros is active
-
-### From Source
-
-```bash
-# Clone the repository
-git clone https://github.com/okan/homeros.git
-cd homeros
-
-# Install dependencies
-npm install
-
-# Build for production
-npm run build
-
-# Load the 'dist' folder as an unpacked extension in Chrome
-```
+- **Slot-based bookmarks** — Group links into customizable slots with icons. Add titles, descriptions, and tags to each link.
+- **Drag & drop** — Reorder slots and links freely with smooth drag-and-drop powered by dnd-kit.
+- **Quick search** — Press `⌘K` to instantly find bookmarks and snippets. Navigate results with keyboard.
+- **Todo panel** — Slide-out task list with deadline tracking and visual urgency indicators. Open with `⌘T`.
+- **Daily habit tracker** — Track streaks, view a 7-day history, and celebrate completions with confetti.
+- **Text snippets** — Store frequently used texts and copy them instantly from search or the snippet manager.
+- **Dark & light themes** — Toggle between themes from settings.
+- **Data export & import** — Back up everything to JSON. Restore with replace or merge modes.
+- **Keyboard shortcuts** — `⌘K` search, `⌘E` edit mode, `⌘T` todo panel, `Esc` to dismiss.
 
 ## Tech Stack
 
-- **Runtime**: React 18, TypeScript
-- **Bundler**: Vite 7 + [@crxjs/vite-plugin](https://crxjs.dev/vite-plugin)
-- **State**: Zustand
-- **Styling**: Tailwind CSS
-- **DnD**: @dnd-kit
-- **Testing**: Playwright (E2E)
-- **CI**: GitHub Actions
+| Layer       | Technology                           |
+| ----------- | ------------------------------------ |
+| Framework   | React 18, TypeScript                 |
+| Build       | Vite 7, @crxjs/vite-plugin           |
+| Styling     | TailwindCSS 3, PostCSS               |
+| State       | Zustand                              |
+| Drag & Drop | @dnd-kit                             |
+| Icons       | Lucide React                         |
+| Date        | date-fns                             |
+| Testing     | Playwright (E2E)                     |
+| Quality     | ESLint, Prettier, Husky, lint-staged |
+| CI/CD       | GitHub Actions                       |
 
-## Development
+## Getting Started
+
+### Prerequisites
+
+- Node.js 20+
+- npm
+
+### Install & Run
 
 ```bash
 npm install
 npm run dev
 ```
 
-### Available Scripts
+### Load as Chrome Extension
 
-| Command               | Description                     |
-| --------------------- | ------------------------------- |
-| `npm run dev`         | Start development server        |
-| `npm run build`       | Type-check and production build |
-| `npm run type-check`  | Run TypeScript type checking    |
-| `npm run lint`        | Lint with ESLint                |
-| `npm run format`      | Format with Prettier            |
-| `npm run test:e2e`    | Run Playwright E2E tests        |
-| `npm run test:e2e:ui` | Open Playwright UI mode         |
+1. Run `npm run build`
+2. Open `chrome://extensions`
+3. Enable **Developer mode**
+4. Click **Load unpacked** and select the `dist/` folder
 
-## Privacy
+## Scripts
 
-Homeros stores all data locally on your device:
+| Command               | Description                         |
+| --------------------- | ----------------------------------- |
+| `npm run dev`         | Start Vite dev server               |
+| `npm run build`       | Type-check and build for production |
+| `npm run preview`     | Preview production build            |
+| `npm run type-check`  | Run TypeScript type checking        |
+| `npm run lint`        | Run ESLint                          |
+| `npm run format`      | Format with Prettier                |
+| `npm run test:e2e`    | Run Playwright E2E tests            |
+| `npm run test:e2e:ui` | Run E2E tests with UI               |
 
-- Bookmarks, TODOs, and snippets are saved to `chrome.storage.local`.
-- Habits are stored in the browser's local storage via Zustand persist.
+## Project Structure
 
-Homeros does not use external servers, analytics, or network requests. The extension requests only the `storage` permission.
+```
+src/
+├── components/     # React components (modals, panels, grid, toolbar, etc.)
+├── hooks/          # Custom hooks (storage, shortcuts, onboarding)
+├── store/          # Zustand stores (bookmarks, todos, habits, snippets, theme)
+├── types/          # TypeScript type definitions
+├── utils/          # Helpers (URL validation, data export, favicon, deadline)
+├── App.tsx         # Root component
+└── main.tsx        # Entry point
+```
 
 ## Contributing
 
-Issues and pull requests are welcome. See [Issues](https://github.com/okan/homeros/issues).
+See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines on development setup, code style, and pull requests.
 
 ## License
 
-MIT. See [LICENSE](./LICENSE) for details.
+[MIT](LICENSE)
