@@ -290,12 +290,7 @@ export const SettingsModal = ({ isOpen, onClose }: SettingsModalProps) => {
                       <Scissors className="w-5 h-5 text-interactive-primary" />
                     </div>
                     <div>
-                      <div className="flex items-center">
-                        <p className="text-value text-text-primary font-medium">Text Snippets</p>
-                        <span className="text-[10px] uppercase font-bold px-1.5 py-0.5 rounded-full bg-interactive-primary/10 text-interactive-primary ml-2">
-                          New
-                        </span>
-                      </div>
+                      <p className="text-value text-text-primary font-medium">Text Snippets</p>
                       <p className="text-sm text-text-secondary">Quick access & copy</p>
                     </div>
                   </div>
