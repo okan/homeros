@@ -56,7 +56,9 @@ export const Link = ({ link, slotId, isEditMode }: LinkProps) => {
         )}
       </div>
       <div className="flex-1 min-w-0 flex items-center gap-normal">
-        <span className="text-value text-text-primary truncate">{link.title}</span>
+        <span className="text-value text-text-primary truncate transition-colors group-hover/link:text-interactive-primary">
+          {link.title}
+        </span>
         {link.description && (
           <span className="text-value text-text-placeholder/40 truncate">
             {link.description}
@@ -84,7 +86,7 @@ export const Link = ({ link, slotId, isEditMode }: LinkProps) => {
 
       <a 
         href={link.url} 
-        className="flex-1 flex items-center gap-normal min-w-0 p-fine hover:bg-bg-wash rounded-control transition-all duration-200 hover:translate-x-0.5 group/link"
+        className="flex-1 flex items-center gap-normal min-w-0 p-fine hover:bg-interactive-primary/10 rounded-control transition-all duration-200 hover:translate-x-0.5 group/link"
       >
         {content}
       </a>

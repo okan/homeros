@@ -1,5 +1,4 @@
 export default {
-  darkMode: 'class',
   content: [
     "./index.html",
     "./src/**/*.{js,ts,jsx,tsx}",
@@ -14,7 +13,6 @@ export default {
         'text-secondary': 'rgb(var(--text-secondary) / var(--text-secondary-opacity))',
         'text-placeholder': 'rgb(var(--text-placeholder) / var(--text-placeholder-opacity))',
         'border-element': 'rgb(var(--border-element) / var(--border-element-opacity))',
-        'border-element-hover': 'rgb(var(--border-element) / var(--border-element-hover-opacity))',
         'border-divider': 'rgb(var(--border-divider) / var(--border-divider-opacity))',
         'interactive-primary': 'rgb(var(--interactive-primary) / <alpha-value>)',
         'interactive-primary-hover': 'rgb(var(--interactive-primary-hover) / <alpha-value>)',

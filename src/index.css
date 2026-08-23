@@ -2,8 +2,13 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Preset themes: each [data-theme='<id>'] block below redefines every variable.
+   :root holds the Stone (default) theme and is the fallback for unknown ids.
+   When adding a theme, also add a registry entry in src/themes.ts. */
 @layer base {
   :root {
+    color-scheme: light;
+
     --bg-page: 250 248 246;
     --bg-content: 255 255 255;
     --bg-wash: 0 0 0;
@@ -18,7 +23,6 @@
 
     --border-element: 28 25 23;
     --border-element-opacity: 0.1;
-    --border-element-hover-opacity: 0.35;
     --border-divider: 28 25 23;
     --border-divider-opacity: 0.45;
 
@@ -39,7 +43,9 @@
     --gradient-end: 243 238 234;
   }
 
-  .dark {
+  [data-theme='midnight'] {
+    color-scheme: dark;
+
     --bg-page: 15 15 20;
     --bg-content: 24 24 32;
     --bg-wash: 255 255 255;
@@ -54,7 +60,6 @@
 
     --border-element: 255 255 255;
     --border-element-opacity: 0.08;
-    --border-element-hover-opacity: 0.3;
     --border-divider: 255 255 255;
     --border-divider-opacity: 0.16;
 
@@ -73,6 +78,191 @@
 
     --gradient-start: 15 15 20;
     --gradient-end: 20 20 35;
+  }
+
+  [data-theme='ocean'] {
+    color-scheme: light;
+
+    --bg-page: 246 249 251;
+    --bg-content: 255 255 255;
+    --bg-wash: 0 0 0;
+    --bg-wash-opacity: 0.04;
+
+    --text-primary: 18 32 44;
+    --text-primary-opacity: 0.92;
+    --text-secondary: 18 32 44;
+    --text-secondary-opacity: 0.72;
+    --text-placeholder: 18 32 44;
+    --text-placeholder-opacity: 0.48;
+
+    --border-element: 18 32 44;
+    --border-element-opacity: 0.1;
+    --border-divider: 18 32 44;
+    --border-divider-opacity: 0.45;
+
+    --interactive-primary: 62 106 145;
+    --interactive-primary-hover: 52 91 126;
+    --interactive-primary-active: 44 78 109;
+    --interactive-selected: 62 106 145;
+    --interactive-selected-opacity: 0.12;
+
+    --accent-warm: 234 140 46;
+    --accent-success: 34 197 94;
+    --accent-danger: 239 68 68;
+
+    --icon-default: 18 32 44;
+    --icon-default-opacity: 0.7;
+
+    --gradient-start: 246 249 251;
+    --gradient-end: 230 240 247;
+  }
+
+  [data-theme='forest'] {
+    color-scheme: dark;
+
+    --bg-page: 15 20 17;
+    --bg-content: 23 31 26;
+    --bg-wash: 255 255 255;
+    --bg-wash-opacity: 0.06;
+
+    --text-primary: 248 250 252;
+    --text-primary-opacity: 0.95;
+    --text-secondary: 248 250 252;
+    --text-secondary-opacity: 0.72;
+    --text-placeholder: 248 250 252;
+    --text-placeholder-opacity: 0.45;
+
+    --border-element: 255 255 255;
+    --border-element-opacity: 0.08;
+    --border-divider: 255 255 255;
+    --border-divider-opacity: 0.16;
+
+    --interactive-primary: 126 156 122;
+    --interactive-primary-hover: 109 138 105;
+    --interactive-primary-active: 94 120 91;
+    --interactive-selected: 126 156 122;
+    --interactive-selected-opacity: 0.15;
+
+    --accent-warm: 217 179 80;
+    --accent-success: 110 231 160;
+    --accent-danger: 248 113 113;
+
+    --icon-default: 248 250 252;
+    --icon-default-opacity: 0.8;
+
+    --gradient-start: 15 20 17;
+    --gradient-end: 19 29 22;
+  }
+
+  [data-theme='rose'] {
+    color-scheme: light;
+
+    --bg-page: 251 247 247;
+    --bg-content: 255 255 255;
+    --bg-wash: 0 0 0;
+    --bg-wash-opacity: 0.04;
+
+    --text-primary: 41 26 29;
+    --text-primary-opacity: 0.92;
+    --text-secondary: 41 26 29;
+    --text-secondary-opacity: 0.72;
+    --text-placeholder: 41 26 29;
+    --text-placeholder-opacity: 0.48;
+
+    --border-element: 41 26 29;
+    --border-element-opacity: 0.1;
+    --border-divider: 41 26 29;
+    --border-divider-opacity: 0.45;
+
+    --interactive-primary: 176 106 118;
+    --interactive-primary-hover: 157 91 103;
+    --interactive-primary-active: 137 78 89;
+    --interactive-selected: 176 106 118;
+    --interactive-selected-opacity: 0.12;
+
+    --accent-warm: 240 138 93;
+    --accent-success: 34 197 94;
+    --accent-danger: 239 68 68;
+
+    --icon-default: 41 26 29;
+    --icon-default-opacity: 0.7;
+
+    --gradient-start: 251 247 247;
+    --gradient-end: 245 233 235;
+  }
+
+  [data-theme='amethyst'] {
+    color-scheme: dark;
+
+    --bg-page: 19 16 26;
+    --bg-content: 28 24 38;
+    --bg-wash: 255 255 255;
+    --bg-wash-opacity: 0.06;
+
+    --text-primary: 248 250 252;
+    --text-primary-opacity: 0.95;
+    --text-secondary: 248 250 252;
+    --text-secondary-opacity: 0.72;
+    --text-placeholder: 248 250 252;
+    --text-placeholder-opacity: 0.45;
+
+    --border-element: 255 255 255;
+    --border-element-opacity: 0.08;
+    --border-divider: 255 255 255;
+    --border-divider-opacity: 0.16;
+
+    --interactive-primary: 160 140 190;
+    --interactive-primary-hover: 143 122 174;
+    --interactive-primary-active: 126 106 156;
+    --interactive-selected: 160 140 190;
+    --interactive-selected-opacity: 0.15;
+
+    --accent-warm: 240 171 82;
+    --accent-success: 74 222 128;
+    --accent-danger: 248 113 113;
+
+    --icon-default: 248 250 252;
+    --icon-default-opacity: 0.8;
+
+    --gradient-start: 19 16 26;
+    --gradient-end: 27 21 41;
+  }
+
+  [data-theme='sepia'] {
+    color-scheme: light;
+
+    --bg-page: 248 243 232;
+    --bg-content: 254 250 242;
+    --bg-wash: 0 0 0;
+    --bg-wash-opacity: 0.04;
+
+    --text-primary: 56 45 30;
+    --text-primary-opacity: 0.92;
+    --text-secondary: 56 45 30;
+    --text-secondary-opacity: 0.72;
+    --text-placeholder: 56 45 30;
+    --text-placeholder-opacity: 0.48;
+
+    --border-element: 56 45 30;
+    --border-element-opacity: 0.1;
+    --border-divider: 56 45 30;
+    --border-divider-opacity: 0.45;
+
+    --interactive-primary: 156 124 86;
+    --interactive-primary-hover: 138 108 73;
+    --interactive-primary-active: 120 93 62;
+    --interactive-selected: 156 124 86;
+    --interactive-selected-opacity: 0.12;
+
+    --accent-warm: 205 120 50;
+    --accent-success: 34 197 94;
+    --accent-danger: 239 68 68;
+
+    --icon-default: 56 45 30;
+    --icon-default-opacity: 0.7;
+
+    --gradient-start: 248 243 232;
+    --gradient-end: 240 230 212;
   }
 }
 
@@ -234,7 +424,7 @@
     inset: 0;
     background-image: radial-gradient(
       circle at 1px 1px,
-      rgb(var(--text-primary) / 0.03) 1px,
+      rgb(var(--interactive-primary) / 0.08) 1px,
       transparent 0
     );
     background-size: 24px 24px;
