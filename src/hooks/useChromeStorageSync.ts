@@ -1,4 +1,5 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
+import { useDebouncedStorageSave } from './useDebouncedStorageSave';
 
 interface SyncOptions<T> {
   key: string;
@@ -42,18 +43,7 @@ export const useChromeStorageSync = <T>({
     loadData();
   }, [key, loadFromStorage, migrateSyncToLocal]);
 
-  useEffect(() => {
-    if (isInitialLoad.current) return;
+  const payload = useMemo(() => ({ [key]: data }), [key, data]);
 
-    const saveData = async () => {
-      try {
-        await chrome.storage.local.set({ [key]: data });
-      } catch (error) {
-        console.error(`Failed to save "${key}" to Chrome storage:`, error);
-        onSaveError?.(error);
-      }
-    };
-
-    saveData();
-  }, [key, data, onSaveError]);
+  useDebouncedStorageSave({ payload, skipRef: isInitialLoad, onSaveError });
 };

@@ -1,5 +1,6 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
 import { useSnippetStore } from '../store/useSnippetStore';
+import { useDebouncedStorageSave } from './useDebouncedStorageSave';
 import type { Snippet, SnippetSettings } from '../types';
 
 const SNIPPETS_KEY = 'homeros_snippets';
@@ -28,20 +29,13 @@ export const useSnippetStorage = () => {
     loadData();
   }, [loadSnippetsFromStorage]);
 
-  useEffect(() => {
-    if (isInitialLoad.current) return;
+  const payload = useMemo(
+    () => ({
+      [SNIPPETS_KEY]: snippets,
+      [SETTINGS_KEY]: settings,
+    }),
+    [snippets, settings]
+  );
 
-    const saveData = async () => {
-      try {
-        await chrome.storage.local.set({
-          [SNIPPETS_KEY]: snippets,
-          [SETTINGS_KEY]: settings,
-        });
-      } catch (error) {
-        console.error('Failed to save snippets to Chrome storage:', error);
-      }
-    };
-
-    saveData();
-  }, [snippets, settings]);
+  useDebouncedStorageSave({ payload, skipRef: isInitialLoad });
 };
