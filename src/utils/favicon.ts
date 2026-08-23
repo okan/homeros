@@ -1,15 +1,16 @@
-export const getFaviconUrls = (url: string): string[] => {
+export const getFaviconUrl = (url: string, size = 32): string | null => {
   try {
-    const urlObj = new URL(url);
-    const origin = urlObj.origin;
+    const pageUrl = new URL(url).toString();
 
-    return [
-      `${origin}/favicon.ico`,
-      `${origin}/favicon.png`,
-      `${origin}/apple-touch-icon.png`,
-      `${origin}/apple-touch-icon-precomposed.png`,
-    ];
+    if (typeof chrome !== 'undefined' && chrome.runtime?.getURL) {
+      const faviconUrl = new URL(chrome.runtime.getURL('/_favicon/'));
+      faviconUrl.searchParams.set('pageUrl', pageUrl);
+      faviconUrl.searchParams.set('size', String(size));
+      return faviconUrl.toString();
+    }
+
+    return null;
   } catch {
-    return [];
+    return null;
   }
 };

@@ -3,7 +3,7 @@ import { CSS } from '@dnd-kit/utilities';
 import { GripVertical, Trash2, Edit2, Globe } from 'lucide-react';
 import { useBookmarkStore } from '../store/useBookmarkStore';
 import { useModalStore } from '../store/useModalStore';
-import { getFaviconUrls } from '../utils/favicon';
+import { getFaviconUrl } from '../utils/favicon';
 import type { Link as LinkType } from '../types';
 import { useState } from 'react';
 
@@ -16,8 +16,7 @@ interface LinkProps {
 export const Link = ({ link, slotId, isEditMode }: LinkProps) => {
   const deleteLink = useBookmarkStore((state) => state.deleteLink);
   const { openConfirmModal, openEditLinkModal } = useModalStore();
-  const [faviconUrls] = useState(() => getFaviconUrls(link.url));
-  const [currentFaviconIndex, setCurrentFaviconIndex] = useState(0);
+  const [faviconUrl] = useState(() => getFaviconUrl(link.url));
   const [faviconFailed, setFaviconFailed] = useState(false);
 
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
@@ -39,21 +38,17 @@ export const Link = ({ link, slotId, isEditMode }: LinkProps) => {
   };
 
   const handleFaviconError = () => {
-    if (currentFaviconIndex < faviconUrls.length - 1) {
-      setCurrentFaviconIndex(currentFaviconIndex + 1);
-    } else {
-      setFaviconFailed(true);
-    }
+    setFaviconFailed(true);
   };
 
   const content = (
     <>
       <div className="w-6 h-6 flex items-center justify-center">
-        {faviconFailed || faviconUrls.length === 0 ? (
+        {faviconFailed || !faviconUrl ? (
           <Globe className="w-4 h-4 text-icon-placeholder" />
         ) : (
           <img
-            src={faviconUrls[currentFaviconIndex]}
+            src={faviconUrl}
             alt=""
             className="w-4 h-4"
             onError={handleFaviconError}

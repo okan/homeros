@@ -6,7 +6,7 @@ export default defineManifest({
   name: 'Homeros',
   version: pkg.version,
   description: 'Your "New Tab" page',
-  permissions: ['storage'],
+  permissions: ['storage', 'favicon'],
   chrome_url_overrides: {
     newtab: 'index.html',
   },
