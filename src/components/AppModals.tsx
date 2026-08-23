@@ -17,6 +17,7 @@ interface AppModalsProps {
   onCloseSettings: () => void;
   isSnippetManagerOpen: boolean;
   onCloseSnippetManager: () => void;
+  onOpenSnippetManager: () => void;
 }
 
 export const AppModals = ({
@@ -26,6 +27,7 @@ export const AppModals = ({
   onCloseSettings,
   isSnippetManagerOpen,
   onCloseSnippetManager,
+  onOpenSnippetManager,
 }: AppModalsProps) => {
   const {
     isAddLinkModalOpen,
@@ -55,12 +57,13 @@ export const AppModals = ({
 
       <SearchOverlay isOpen={isSearchOpen} onClose={onCloseSearch} />
 
-      <SettingsModal isOpen={isSettingsOpen} onClose={onCloseSettings} />
-
-      <SnippetManagerModal
-        isOpen={isSnippetManagerOpen}
-        onClose={onCloseSnippetManager}
+      <SettingsModal
+        isOpen={isSettingsOpen}
+        onClose={onCloseSettings}
+        onOpenSnippetManager={onOpenSnippetManager}
       />
+
+      <SnippetManagerModal isOpen={isSnippetManagerOpen} onClose={onCloseSnippetManager} />
 
       <ConfirmModal
         isOpen={isConfirmModalOpen}

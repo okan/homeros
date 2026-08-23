@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useThemeStore } from './store/useThemeStore';
+import { applyTheme } from './themes';
 import { useBookmarkStore } from './store/useBookmarkStore';
 import { useTodoStore } from './store/useTodoStore';
 import { useChromeStorage } from './hooks/useChromeStorage';
@@ -12,14 +13,14 @@ import { TodoPanel } from './components/TodoPanel';
 import { AppModals } from './components/AppModals';
 
 function App() {
-  const isDarkMode = useThemeStore((state) => state.isDarkMode);
+  const theme = useThemeStore((state) => state.theme);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [isSnippetManagerOpen, setIsSnippetManagerOpen] = useState(false);
 
   useEffect(() => {
-    document.documentElement.classList.toggle('dark', isDarkMode);
-  }, [isDarkMode]);
+    applyTheme(theme);
+  }, [theme]);
 
   useChromeStorage();
   useTodoStorage();
@@ -38,6 +39,10 @@ function App() {
   const handleCloseSearch = useCallback(() => setIsSearchOpen(false), []);
   const handleCloseSettings = useCallback(() => setIsSettingsOpen(false), []);
   const handleCloseSnippetManager = useCallback(() => setIsSnippetManagerOpen(false), []);
+  const handleOpenSnippetManagerFromSettings = useCallback(() => {
+    setIsSettingsOpen(false);
+    setIsSnippetManagerOpen(true);
+  }, []);
 
   return (
     <div className="min-h-screen">
@@ -53,7 +58,11 @@ function App() {
         onOpenSnippetManager={() => setIsSnippetManagerOpen(true)}
       />
 
-      <main id="main-content" className="max-w-7xl mx-auto px-page py-section min-h-screen flex flex-col justify-center" role="main">
+      <main
+        id="main-content"
+        className="max-w-7xl mx-auto px-page py-section min-h-screen flex flex-col justify-center"
+        role="main"
+      >
         <BookmarkGrid />
       </main>
 
@@ -64,6 +73,7 @@ function App() {
         onCloseSettings={handleCloseSettings}
         isSnippetManagerOpen={isSnippetManagerOpen}
         onCloseSnippetManager={handleCloseSnippetManager}
+        onOpenSnippetManager={handleOpenSnippetManagerFromSettings}
       />
     </div>
   );

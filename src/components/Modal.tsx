@@ -6,9 +6,10 @@ interface ModalProps {
   onClose: () => void;
   title: string;
   children: ReactNode;
+  wide?: boolean;
 }
 
-export const Modal = ({ isOpen, onClose, title, children }: ModalProps) => {
+export const Modal = ({ isOpen, onClose, title, children, wide = false }: ModalProps) => {
   const modalRef = useRef<HTMLDivElement>(null);
   const closeButtonRef = useRef<HTMLButtonElement>(null);
   const onCloseRef = useRef(onClose);
@@ -40,12 +41,12 @@ export const Modal = ({ isOpen, onClose, title, children }: ModalProps) => {
 
   return (
     <>
-      <div 
-        className="fixed inset-0 bg-black/30 z-50 transition-opacity" 
+      <div
+        className="fixed inset-0 bg-black/30 z-50 transition-opacity"
         onClick={stableOnClose}
         aria-hidden="true"
       />
-      <div 
+      <div
         className="fixed inset-0 z-50 flex items-center justify-center p-component pointer-events-none"
         role="dialog"
         aria-modal="true"
@@ -53,11 +54,13 @@ export const Modal = ({ isOpen, onClose, title, children }: ModalProps) => {
       >
         <div
           ref={modalRef}
-          className="glass-strong rounded-container border border-border-element max-w-md w-full pointer-events-auto transform transition-all duration-200 ease-out shadow-card-lg animate-scale-in"
+          className={`glass-strong rounded-container border border-border-element ${wide ? 'max-w-xl' : 'max-w-md'} w-full max-h-[85vh] flex flex-col pointer-events-auto transform transition-all duration-200 ease-out shadow-card-lg animate-scale-in`}
           onClick={(e) => e.stopPropagation()}
         >
-          <div className="flex items-center justify-between p-component">
-            <h2 id="modal-title" className="text-header3 text-text-primary font-semibold">{title}</h2>
+          <div className="flex items-center justify-between p-component shrink-0">
+            <h2 id="modal-title" className="text-header3 text-text-primary font-semibold">
+              {title}
+            </h2>
             <button
               ref={closeButtonRef}
               onClick={stableOnClose}
@@ -67,10 +70,9 @@ export const Modal = ({ isOpen, onClose, title, children }: ModalProps) => {
               <X className="w-5 h-5" aria-hidden="true" />
             </button>
           </div>
-          <div className="p-component">{children}</div>
+          <div className="p-component overflow-y-auto">{children}</div>
         </div>
       </div>
     </>
   );
 };
-
