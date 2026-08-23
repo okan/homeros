@@ -64,7 +64,7 @@ export const Slot = ({ slot, isEditMode }: SlotProps) => {
     <div
       ref={setNodeRef}
       style={style}
-      className="glass rounded-container p-coarse flex flex-col transition-all duration-200 border border-border-element hover:border-interactive-primary/20 hover:shadow-card-md min-h-[200px]"
+      className="glass rounded-container p-coarse flex flex-col transition-all duration-200 border border-border-element hover:border-border-element-hover min-h-[200px]"
     >
       <div className="flex items-center gap-normal pb-normal mb-normal group">
         {isEditMode && (
