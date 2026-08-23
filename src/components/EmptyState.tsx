@@ -57,10 +57,10 @@ export const EmptyState = () => {
           className="inline-flex items-center gap-1.5 text-accent text-interactive-primary hover:text-interactive-primary-hover transition-colors group"
         >
           <Settings className="w-3.5 h-3.5" />
-          <span>Customize</span>
+          <span>Edit</span>
           <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
         </button>
-        <span className="text-accent">to customize fully</span>
+        <span className="text-accent">to set up your own</span>
       </div>
     </div>
   );

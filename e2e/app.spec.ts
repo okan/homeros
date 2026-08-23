@@ -6,7 +6,7 @@ test.describe('App', () => {
 
     await expect(page.locator('#main-content')).toBeVisible();
     const toolbar = page.locator('.fixed.top-coarse');
-    await expect(toolbar.getByText('Customize')).toBeVisible();
+    await expect(toolbar.getByText('Edit')).toBeVisible();
   });
 
   test('shows empty state when no bookmarks exist', async ({ page }) => {

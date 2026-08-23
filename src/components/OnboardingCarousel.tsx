@@ -12,6 +12,8 @@ import {
   Download,
   Scissors,
   ToggleLeft,
+  SlidersHorizontal,
+  Flame,
 } from 'lucide-react';
 
 interface OnboardingCarouselProps {
@@ -46,26 +48,29 @@ const slides: Slide[] = [
   {
     icon: <ListTodo className="w-12 h-12" />,
     title: 'Stay on Track',
-    description: 'Built-in todo list with deadline tracking. Never miss an important task again.',
-    features: ['Set deadlines', 'Visual deadline warnings', 'Quick add from anywhere'],
+    description: 'Built-in todo list with deadline tracking and a daily habit tracker. Never miss an important task again.',
+    features: ['Open the panel with ⌘T', 'Deadlines with visual warnings', 'Track daily habits & streaks'],
   },
   {
     icon: <Scissors className="w-12 h-12" />,
     title: 'Quick Text Snippets',
     description: 'Store and copy frequently used texts instantly. Perfect for emails, bios, and more.',
-    features: ['Enable from Settings toggle', 'Access from top-right icon', 'Search & copy with ⌘K'],
+    features: ['Enable in Settings → Features', 'Access from top-right icon', 'Search & copy with ⌘K'],
   },
   {
     icon: <Palette className="w-12 h-12" />,
     title: 'Make it Yours',
-    description: 'Customize every aspect. Switch themes, add tags, and backup your data anytime.',
-    features: ['Dark & light themes', 'Tag your bookmarks', 'Export & import data'],
+    description: 'Customize every aspect. Pick a theme, tailor the toolbar, and back up your data anytime.',
+    features: ['7 preset color themes', 'Customizable toolbar', 'Export & import data'],
   },
 ];
 
 const FeatureIcon = ({ feature }: { feature: string }) => {
-  if (feature.includes('⌘K')) return <Command className="w-4 h-4 shrink-0" />;
+  if (feature.includes('⌘')) return <Command className="w-4 h-4 shrink-0" />;
   if (feature.includes('tag')) return <Tag className="w-4 h-4 shrink-0" />;
+  if (feature.includes('theme')) return <Palette className="w-4 h-4 shrink-0" />;
+  if (feature.includes('toolbar')) return <SlidersHorizontal className="w-4 h-4 shrink-0" />;
+  if (feature.includes('habit')) return <Flame className="w-4 h-4 shrink-0" />;
   if (feature.includes('Export')) return <Download className="w-4 h-4 shrink-0" />;
   if (feature.includes('Settings')) return <ToggleLeft className="w-4 h-4 shrink-0" />;
   if (feature.includes('icon') || feature.includes('Manage')) return <Scissors className="w-4 h-4 shrink-0" />;

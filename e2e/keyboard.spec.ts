@@ -25,7 +25,7 @@ test.describe('Keyboard Shortcuts', () => {
 
     await page.keyboard.press('Meta+e');
 
-    await expect(toolbar(page).getByText('Customize')).toBeVisible();
+    await expect(toolbar(page).getByText('Edit')).toBeVisible();
   });
 
   test('Cmd/Ctrl+T toggles todo panel', async ({ page }) => {

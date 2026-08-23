@@ -32,7 +32,7 @@ test.describe('Search', () => {
     await page.goto('/');
 
     await page.getByRole('button', { name: 'Work' }).click();
-    await toolbar(page).getByRole('button', { name: 'Customize' }).click();
+    await toolbar(page).getByRole('button', { name: 'Edit' }).click();
     await page.locator('#main-content').getByRole('button', { name: 'Add Link' }).click();
 
     const modal = page.getByRole('dialog');

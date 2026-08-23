@@ -6,20 +6,20 @@ test.describe('Bookmarks', () => {
   test('can enter and exit edit mode', async ({ page }) => {
     await page.goto('/');
 
-    await toolbar(page).getByRole('button', { name: 'Customize' }).click();
+    await toolbar(page).getByRole('button', { name: 'Edit' }).click();
 
     await expect(toolbar(page).getByText('Done')).toBeVisible();
     await expect(page.getByText('Add Slot')).toBeVisible();
 
     await toolbar(page).getByRole('button', { name: 'Done' }).click();
 
-    await expect(toolbar(page).getByText('Customize')).toBeVisible();
+    await expect(toolbar(page).getByText('Edit')).toBeVisible();
   });
 
   test('can add a new slot', async ({ page }) => {
     await page.goto('/');
 
-    await toolbar(page).getByRole('button', { name: 'Customize' }).click();
+    await toolbar(page).getByRole('button', { name: 'Edit' }).click();
     await page.getByRole('button', { name: 'Add Slot' }).click();
 
     await page.getByPlaceholder('Slot name').fill('My Slot');
@@ -33,7 +33,7 @@ test.describe('Bookmarks', () => {
 
     await page.getByRole('button', { name: 'Work' }).click();
 
-    await toolbar(page).getByRole('button', { name: 'Customize' }).click();
+    await toolbar(page).getByRole('button', { name: 'Edit' }).click();
     await page.locator('#main-content').getByRole('button', { name: 'Add Link' }).click();
 
     const modal = page.getByRole('dialog');
@@ -54,7 +54,7 @@ test.describe('Bookmarks', () => {
 
     await expect(page.getByRole('heading', { name: 'Work' })).toBeVisible();
 
-    await toolbar(page).getByRole('button', { name: 'Customize' }).click();
+    await toolbar(page).getByRole('button', { name: 'Edit' }).click();
 
     const slotHeader = page.locator('#main-content .group').filter({ hasText: 'Work' });
     await slotHeader.hover();
@@ -70,7 +70,7 @@ test.describe('Bookmarks', () => {
   test('cancel adding a slot reverts form', async ({ page }) => {
     await page.goto('/');
 
-    await toolbar(page).getByRole('button', { name: 'Customize' }).click();
+    await toolbar(page).getByRole('button', { name: 'Edit' }).click();
     await page.getByRole('button', { name: 'Add Slot' }).click();
 
     await expect(page.getByPlaceholder('Slot name')).toBeVisible();

@@ -24,7 +24,8 @@
 - **Todo panel** — Slide-out task list with deadline tracking and visual urgency indicators. Open with `⌘T`.
 - **Daily habit tracker** — Track streaks, view a 7-day history, and celebrate completions with confetti.
 - **Text snippets** — Store frequently used texts and copy them instantly from search or the snippet manager.
-- **Dark & light themes** — Toggle between themes from settings.
+- **Preset themes** — Pick from 7 full color themes (Stone, Midnight, Ocean, Forest, Rose, Amethyst, Sepia) in settings.
+- **Customizable toolbar** — Show toolbar buttons as icon-only or icon + text, and choose which buttons appear.
 - **Data export & import** — Back up everything to JSON. Restore with replace or merge modes.
 - **Keyboard shortcuts** — `⌘K` search, `⌘E` edit mode, `⌘T` todo panel, `Esc` to dismiss.
 
