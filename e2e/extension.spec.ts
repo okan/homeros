@@ -1,7 +1,7 @@
 import { test, expect, chromium } from '@playwright/test';
 import type { BrowserContext, Page, Worker } from '@playwright/test';
 import { execSync } from 'node:child_process';
-import { mkdtempSync, rmSync } from 'node:fs';
+import { mkdtempSync, readFileSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -19,7 +19,16 @@ let context: BrowserContext;
 let worker: Worker;
 let extensionId: string;
 
-type TabInfo = { id: number; url: string; title: string };
+type TabInfo = { id: number; url: string; title: string; incognito?: boolean };
+
+const actionTitle = (tabId: number) =>
+  worker.evaluate((id) => chrome.action.getTitle({ tabId: id }), tabId);
+
+const storedSlotNames = () =>
+  worker.evaluate(async () => {
+    const { homeros_bookmarks } = await chrome.storage.local.get('homeros_bookmarks');
+    return (homeros_bookmarks ?? []).map((slot: { name: string }) => slot.name).sort();
+  });
 
 const readInbox = () =>
   worker.evaluate(
@@ -79,6 +88,11 @@ test.beforeEach(async () => {
     await chrome.storage.local.clear();
     await chrome.storage.local.set({ homeros_onboarding_completed: true });
   });
+});
+
+// Pages left open would keep reacting to (and writing) storage during the next test
+test.afterEach(async () => {
+  await Promise.all(context.pages().map((page) => page.close()));
 });
 
 test.afterAll(async () => {
@@ -206,4 +220,162 @@ test('new tab page moves and removes links while the toolbar keeps saving', asyn
   });
   expect(workUrls).toEqual(['https://example.com/b']);
   await expect(page.getByRole('link', { name: 'Page B' })).toBeVisible();
+});
+
+test('drops sign-in tokens and credentials from saved pages', async () => {
+  const tabId = await openTab('https://example.com/reset');
+
+  await clickToolbarButton({
+    id: tabId,
+    url: 'https://user:secret@example.com/reset?lang=tr&token=abc#access_token=x&state=y',
+    title: 'Reset',
+  });
+
+  await expect.poll(inboxUrls).toEqual(['https://example.com/reset?lang=tr#state=y']);
+});
+
+test('strips invisible characters from page titles', async () => {
+  const tabId = await openTab('https://example.com/title');
+
+  await clickToolbarButton({
+    id: tabId,
+    url: 'https://example.com/title',
+    title: '‮Garanti​ BBVA - Giriş',
+  });
+
+  await expect
+    .poll(readInbox)
+    .toEqual([expect.objectContaining({ title: 'Garanti BBVA - Giriş' })]);
+});
+
+test('does not save pages from Incognito windows', async () => {
+  const tabId = await openTab('https://example.com/private');
+
+  await clickToolbarButton({
+    id: tabId,
+    url: 'https://example.com/private',
+    title: 'Private',
+    incognito: true,
+  });
+
+  await expect.poll(() => badgeText(tabId)).toBe('✕');
+  expect(await actionTitle(tabId)).toBe("Pages from Incognito windows aren't saved");
+  expect(await readInbox()).toEqual([]);
+});
+
+test('does not save pages with very long addresses', async () => {
+  const tabId = await openTab('https://example.com/long');
+
+  await clickToolbarButton({
+    id: tabId,
+    url: `https://example.com/long#${'a'.repeat(1_900_000)}`,
+    title: 'Long',
+  });
+
+  await expect.poll(() => badgeText(tabId)).toBe('✕');
+  expect(await actionTitle(tabId)).toBe("This page's address is too long to save");
+  expect(await readInbox()).toEqual([]);
+});
+
+test('stops saving once the inbox is full', async () => {
+  await worker.evaluate(() =>
+    chrome.storage.local.set({
+      homeros_inbox: Array.from({ length: 200 }, (_, i) => ({
+        id: `l${i}`,
+        title: `Link ${i}`,
+        url: `https://example.com/${i}`,
+        order: i,
+      })),
+    }),
+  );
+  const tabId = await openTab('https://example.com/one-more');
+
+  await clickToolbarButton({ id: tabId, url: 'https://example.com/one-more', title: 'More' });
+
+  await expect.poll(() => badgeText(tabId)).toBe('✕');
+  expect(await actionTitle(tabId)).toContain('inbox is full');
+  expect(await readInbox()).toHaveLength(200);
+});
+
+test('edits made at the same moment in two new tab pages are both kept', async () => {
+  await worker.evaluate(() =>
+    chrome.storage.local.set({
+      homeros_bookmarks: [{ id: 'base', name: 'Base', icon: 'Folder', order: 0, links: [] }],
+    }),
+  );
+  const pages = [await openNewTabPage(), await openNewTabPage()];
+  const names = ['Work', 'Reading'];
+
+  // Get both "Add Slot" forms ready once the saved slots have loaded, then submit them together
+  for (const [index, page] of pages.entries()) {
+    await expect(page.getByRole('heading', { name: 'Base' })).toBeVisible();
+    await page
+      .getByRole('toolbar', { name: 'Toolbar' })
+      .getByRole('button', { name: 'Edit' })
+      .click();
+    await page.getByRole('button', { name: 'Add Slot' }).click();
+    await page.getByPlaceholder('Slot name').fill(names[index]);
+  }
+  await Promise.all(
+    // Clicked from inside the pages, so both land within a few milliseconds
+    pages.map((page) =>
+      page.evaluate(() =>
+        [...document.querySelectorAll<HTMLButtonElement>('#main-content form button')]
+          .find((button) => button.textContent?.trim() === 'Add')
+          ?.click(),
+      ),
+    ),
+  );
+
+  await expect.poll(storedSlotNames).toEqual(['Base', 'Reading', 'Work']);
+  for (const page of pages) {
+    for (const name of ['Base', 'Work', 'Reading']) {
+      await expect(page.getByRole('heading', { name })).toBeVisible();
+    }
+  }
+});
+
+test('an edit made before the page finished loading is saved', async () => {
+  type HeldWindow = Window & { __releaseRead?: () => void };
+  const page = await context.newPage();
+  // Hold the first bookmarks read until the test releases it, so the click lands mid-load
+  await page.addInitScript(() => {
+    const get = chrome.storage.local.get.bind(chrome.storage.local);
+    let held = false;
+    chrome.storage.local.get = ((keys: string) => {
+      if (held || keys !== 'homeros_bookmarks') return get(keys);
+      held = true;
+      return new Promise((resolve) => {
+        (window as HeldWindow).__releaseRead = () => resolve(get(keys));
+      });
+    }) as typeof chrome.storage.local.get;
+  });
+  await page.goto(`chrome-extension://${extensionId}/index.html`);
+  await expect
+    .poll(() => page.evaluate(() => typeof (window as HeldWindow).__releaseRead))
+    .toBe('function');
+
+  await page.getByRole('button', { name: 'Work' }).click();
+  await page.evaluate(() => (window as HeldWindow).__releaseRead?.());
+
+  await expect.poll(storedSlotNames).toEqual(['Work']);
+});
+
+// Guards the promise to existing users: new permissions with an install warning would disable
+// the extension on update until they approve it, and wider access raises the risk of every bug
+test('manifest only asks for permissions without new install warnings', () => {
+  const manifest = JSON.parse(readFileSync(join(distDir, 'manifest.json'), 'utf8'));
+
+  expect(manifest.permissions).toEqual(['storage', 'favicon', 'activeTab', 'contextMenus']);
+  for (const key of [
+    'host_permissions',
+    'optional_permissions',
+    'optional_host_permissions',
+    'content_scripts',
+    'web_accessible_resources',
+    'externally_connectable',
+    'content_security_policy',
+  ]) {
+    expect(manifest[key], key).toBeUndefined();
+  }
 });

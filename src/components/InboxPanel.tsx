@@ -3,6 +3,7 @@ import { Inbox, FolderInput, X, ChevronUp, ChevronDown } from 'lucide-react';
 import { useInboxStore } from '../store/useInboxStore';
 import { useBookmarkStore } from '../store/useBookmarkStore';
 import { useInboxActions } from '../hooks/useInboxActions';
+import { getDomainFromUrl } from '../utils/url';
 import { Favicon } from './Favicon';
 import { getIconComponent } from './IconPicker';
 import type { Link } from '../types';
@@ -39,8 +40,14 @@ const InboxItem = ({ link, isMoveOpen, onToggleMove, onMove, onRemove }: InboxIt
           <div className="w-4 h-4 flex items-center justify-center shrink-0">
             <Favicon url={link.url} />
           </div>
-          <span className="text-value text-text-primary truncate transition-colors group-hover/link:text-interactive-primary">
-            {link.title}
+          <span className="min-w-0">
+            <span className="block text-value text-text-primary truncate transition-colors group-hover/link:text-interactive-primary">
+              {link.title}
+            </span>
+            {/* A page can give itself any title, so show where the link really goes */}
+            <span className="block text-accent text-text-placeholder truncate">
+              {getDomainFromUrl(link.url)}
+            </span>
           </span>
         </a>
 
@@ -173,7 +180,7 @@ export const InboxPanel = () => {
       </button>
 
       {!isCollapsed && (
-        <ul id="inbox-links" className="max-h-48 overflow-y-auto px-fine pb-fine">
+        <ul id="inbox-links" className="max-h-60 overflow-y-auto px-fine pb-fine">
           {links.map((link) => (
             <InboxItem
               key={link.id}

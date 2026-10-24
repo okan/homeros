@@ -38,23 +38,27 @@ export const useDebouncedStorageSave = ({
 
     pendingRef.current = payload;
     timeoutRef.current = window.setTimeout(async () => {
-      pendingRef.current = null;
       try {
         await writeRef.current(payload);
       } catch (error) {
         console.error('Failed to save to Chrome storage:', error);
         onSaveErrorRef.current?.(error);
+      } finally {
+        // Cleared only now, so closing the page mid-write still flushes it
+        if (pendingRef.current === payload) pendingRef.current = null;
       }
     }, SAVE_DEBOUNCE_MS);
   }, [payload, skipRef]);
 
   useEffect(() => {
+    // The page is going away, so write straight away rather than through `write`, which may
+    // wait (for a lock, a read) longer than the page lives
     const flush = () => {
       if (!pendingRef.current) return;
       window.clearTimeout(timeoutRef.current);
       const data = pendingRef.current;
       pendingRef.current = null;
-      writeRef.current(data).catch((error) => {
+      writeToLocalStorage(data).catch((error) => {
         console.error('Failed to save to Chrome storage:', error);
         onSaveErrorRef.current?.(error);
       });

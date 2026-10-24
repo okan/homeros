@@ -47,6 +47,9 @@ test.describe('Inbox', () => {
     test('shows links waiting to be sorted', async ({ page }) => {
       await page.goto('/');
 
+      // The real site under each title, since a page can give itself any title
+      await expect(inbox(page).getByText('github.com', { exact: true })).toBeVisible();
+      await expect(inbox(page).getByText('developer.mozilla.org', { exact: true })).toBeVisible();
       await expect(inbox(page).getByText('2 to sort')).toBeVisible();
       await expect(inbox(page).getByRole('link', { name: 'GitHub' })).toBeVisible();
       await expect(inbox(page).getByRole('link', { name: 'MDN Docs' })).toBeVisible();

@@ -3,12 +3,16 @@ import { useBookmarkStore } from '../store/useBookmarkStore';
 import { useInboxStore } from '../store/useInboxStore';
 import { useToastStore } from '../store/useToastStore';
 import { moveLinkToSlot } from '../utils/inbox';
+import { mergeById } from '../utils/merge';
 import {
   BOOKMARKS_STORAGE_KEY,
   INBOX_STORAGE_KEY,
   STORAGE_LOCK,
+  getSynced,
+  mergeWithStored,
   writeSynced,
 } from '../utils/storage';
+import type { Slot } from '../types';
 import type { Link } from '../types';
 
 // The toolbar button can add to the inbox at any moment, so these changes go straight to
@@ -27,8 +31,14 @@ export const useInboxActions = () => {
         const outcome = await navigator.locks.request(STORAGE_LOCK, async () => {
           const inbox = await readInbox();
           const link = inbox.find((l) => l.id === linkId);
-          // In-memory slots are the newest, including edits still waiting to be saved
-          const slots = useBookmarkStore.getState().slots;
+          // In-memory slots hold this page's newest edits, saved or not; anything another page
+          // saved meanwhile is merged in so this write doesn't overwrite it
+          const slots = await mergeWithStored(
+            BOOKMARKS_STORAGE_KEY,
+            useBookmarkStore.getState().slots,
+            getSynced(BOOKMARKS_STORAGE_KEY),
+            mergeById<Slot>,
+          );
           const slot = slots.find((s) => s.id === slotId);
           if (!link || !slot) return null;
 

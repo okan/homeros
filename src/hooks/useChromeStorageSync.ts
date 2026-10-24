@@ -1,6 +1,14 @@
-import { useEffect, useMemo, useRef } from 'react';
+import { useCallback, useEffect, useMemo, useRef } from 'react';
 import { useDebouncedStorageSave } from './useDebouncedStorageSave';
-import { consumeEcho, isSynced, markSynced, stableStringify, writeSynced } from '../utils/storage';
+import { mergeById } from '../utils/merge';
+import {
+  classifyChange,
+  getSynced,
+  isSynced,
+  markSynced,
+  stableStringify,
+  writeMerged,
+} from '../utils/storage';
 
 interface SyncOptions<T> {
   key: string;
@@ -10,7 +18,8 @@ interface SyncOptions<T> {
   migrateSyncToLocal?: boolean;
 }
 
-export const useChromeStorageSync = <T>({
+// Data is a list of items with ids, so concurrent edits from other pages can be merged
+export const useChromeStorageSync = <T extends { id: string }[]>({
   key,
   data,
   loadFromStorage,
@@ -19,6 +28,31 @@ export const useChromeStorageSync = <T>({
 }: SyncOptions<T>) => {
   const isInitialLoad = useRef(true);
   const receivedChangeRef = useRef(false);
+  const serializedData = useMemo(() => stableStringify(data), [data]);
+  const dataRef = useRef(data);
+  dataRef.current = data;
+  const serializedRef = useRef(serializedData);
+  serializedRef.current = serializedData;
+  // The store's state before anything was loaded: what's "stored" while storage is empty
+  const initialSerializedRef = useRef(serializedData);
+
+  const merge = useCallback(
+    (base: T, ours: T, theirs: T) => mergeById<T[number]>(base, ours, theirs) as T,
+    [],
+  );
+
+  const write = useCallback(
+    async (payload: Record<string, unknown>) => {
+      const saved = payload[key] as T;
+      const stored = await writeMerged(key, saved, merge);
+      if (stored === saved) return;
+
+      // Another page's changes were merged in; keep any edit made here while saving
+      const current = dataRef.current;
+      loadFromStorage(current === saved ? stored : merge(saved, current, stored));
+    },
+    [key, loadFromStorage, merge],
+  );
 
   useEffect(() => {
     const loadData = async () => {
@@ -33,11 +67,24 @@ export const useChromeStorageSync = <T>({
 
         const result = await chrome.storage.local.get(key);
         // A change event that arrived while this read was in flight carries a newer value
-        if (result[key] && !receivedChangeRef.current) {
+        if (receivedChangeRef.current) {
+          isInitialLoad.current = false;
+          return;
+        }
+
+        if (result[key]) {
           markSynced(key, stableStringify(result[key]));
           loadFromStorage(result[key]);
+          isInitialLoad.current = false;
+          return;
         }
+
+        markSynced(key, initialSerializedRef.current);
         isInitialLoad.current = false;
+        // Nothing was stored, so an edit made here before loading finished is the only copy
+        if (serializedRef.current !== initialSerializedRef.current) {
+          await write({ [key]: dataRef.current });
+        }
       } catch (error) {
         console.error(`Failed to load "${key}" from Chrome storage:`, error);
         isInitialLoad.current = false;
@@ -45,7 +92,7 @@ export const useChromeStorageSync = <T>({
     };
 
     loadData();
-  }, [key, loadFromStorage, migrateSyncToLocal]);
+  }, [key, loadFromStorage, migrateSyncToLocal, write]);
 
   // Pick up writes from other new tabs and the toolbar button, so a stale tab can't overwrite them
   useEffect(() => {
@@ -57,23 +104,29 @@ export const useChromeStorageSync = <T>({
       if (areaName !== 'local' || newValue === undefined) return;
 
       const serialized = stableStringify(newValue);
-      if (consumeEcho(key, serialized)) return;
+      if (classifyChange(key, serialized) !== 'external') return;
 
       receivedChangeRef.current = true;
+      const base = getSynced(key);
       markSynced(key, serialized);
-      loadFromStorage(newValue);
+
+      // Edits here that aren't saved yet stay, with the other page's changes added on top
+      const hasUnsavedEdits =
+        !isInitialLoad.current && base !== undefined && serializedRef.current !== base;
+      loadFromStorage(
+        hasUnsavedEdits ? merge(JSON.parse(base), dataRef.current, newValue) : newValue,
+      );
     };
 
     chrome.storage.onChanged.addListener(handleChange);
     return () => chrome.storage.onChanged.removeListener(handleChange);
-  }, [key, loadFromStorage]);
+  }, [key, loadFromStorage, merge]);
 
-  const serializedData = useMemo(() => stableStringify(data), [data]);
   // Nothing to save while loading, or when storage already holds exactly this data
   const skipSaveRef = useRef(true);
   skipSaveRef.current = isInitialLoad.current || isSynced(key, serializedData);
 
   const payload = useMemo(() => ({ [key]: data }), [key, data]);
 
-  useDebouncedStorageSave({ payload, skipRef: skipSaveRef, write: writeSynced, onSaveError });
+  useDebouncedStorageSave({ payload, skipRef: skipSaveRef, write, onSaveError });
 };
