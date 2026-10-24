@@ -1,6 +1,7 @@
 import { test, expect } from './fixtures/base';
 
-const toolbar = (page: import('@playwright/test').Page) => page.locator('.fixed.top-coarse');
+const toolbar = (page: import('@playwright/test').Page) =>
+  page.getByRole('toolbar', { name: 'Toolbar' });
 
 test.describe('Search', () => {
   test('can open search overlay via button', async ({ page }) => {

@@ -1,9 +1,9 @@
 import { useState, useEffect, useRef, useMemo } from 'react';
-import { Search, Command, ArrowRight, Globe, Scissors } from 'lucide-react';
+import { Search, Command, ArrowRight, Scissors } from 'lucide-react';
 import { useBookmarkStore } from '../store/useBookmarkStore';
 import { useSnippetStore } from '../store/useSnippetStore';
 import { useToastStore } from '../store/useToastStore';
-import { getFaviconUrl } from '../utils/favicon';
+import { Favicon } from './Favicon';
 
 interface SearchOverlayProps {
   isOpen: boolean;
@@ -186,17 +186,8 @@ export const SearchOverlay = ({ isOpen, onClose }: SearchOverlayProps) => {
                         <div className="w-8 h-8 rounded-lg bg-bg-wash flex items-center justify-center shrink-0">
                           {result.type === 'snippet' ? (
                             <Scissors className="w-4 h-4 text-interactive-primary" />
-                          ) : result.url && getFaviconUrl(result.url) ? (
-                            <img
-                              src={getFaviconUrl(result.url)!}
-                              alt=""
-                              className="w-4 h-4"
-                              onError={(e) => {
-                                (e.target as HTMLImageElement).style.display = 'none';
-                              }}
-                            />
                           ) : (
-                            <Globe className="w-4 h-4 text-icon-placeholder" />
+                            <Favicon url={result.url ?? ''} />
                           )}
                         </div>
 

@@ -6,9 +6,11 @@ import { useTodoStore } from './store/useTodoStore';
 import { useChromeStorage } from './hooks/useChromeStorage';
 import { useTodoStorage } from './hooks/useTodoStorage';
 import { useSnippetStorage } from './hooks/useSnippetStorage';
+import { useInboxStorage } from './hooks/useInboxStorage';
 import { useKeyboardShortcuts } from './hooks/useKeyboardShortcuts';
 import { Toolbar } from './components/Toolbar';
 import { BookmarkGrid } from './components/BookmarkGrid';
+import { InboxPanel } from './components/InboxPanel';
 import { TodoPanel } from './components/TodoPanel';
 import { AppModals } from './components/AppModals';
 
@@ -25,6 +27,7 @@ function App() {
   useChromeStorage();
   useTodoStorage();
   useSnippetStorage();
+  useInboxStorage();
 
   const toggleEditMode = useBookmarkStore((state) => state.toggleEditMode);
   const toggleTodoPanel = useTodoStore((state) => state.toggleTodoPanel);
@@ -52,11 +55,15 @@ function App() {
 
       <TodoPanel />
 
-      <Toolbar
-        onOpenSearch={() => setIsSearchOpen(true)}
-        onOpenSettings={() => setIsSettingsOpen(true)}
-        onOpenSnippetManager={() => setIsSnippetManagerOpen(true)}
-      />
+      {/* One fixed column, so the inbox always sits right below the toolbar whatever its height */}
+      <div className="fixed top-coarse right-coarse z-50 flex flex-col items-end gap-normal">
+        <Toolbar
+          onOpenSearch={() => setIsSearchOpen(true)}
+          onOpenSettings={() => setIsSettingsOpen(true)}
+          onOpenSnippetManager={() => setIsSnippetManagerOpen(true)}
+        />
+        <InboxPanel />
+      </div>
 
       <main
         id="main-content"

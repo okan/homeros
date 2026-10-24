@@ -58,7 +58,7 @@ test.describe('Settings', () => {
   test('can switch toolbar to icon-only mode', async ({ page }) => {
     await page.goto('/');
 
-    const toolbar = page.locator('.fixed.top-coarse');
+    const toolbar = page.getByRole('toolbar', { name: 'Toolbar' });
     await expect(toolbar.getByText('TODOs')).toBeVisible();
 
     await page.getByTitle('Settings').click();
@@ -73,7 +73,7 @@ test.describe('Settings', () => {
   test('can hide a toolbar button', async ({ page }) => {
     await page.goto('/');
 
-    const toolbar = page.locator('.fixed.top-coarse');
+    const toolbar = page.getByRole('toolbar', { name: 'Toolbar' });
     await expect(toolbar.getByTitle('Search (⌘K)')).toBeVisible();
 
     await page.getByTitle('Settings').click();

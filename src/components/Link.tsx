@@ -1,11 +1,10 @@
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import { GripVertical, Trash2, Edit2, Globe } from 'lucide-react';
+import { GripVertical, Trash2, Edit2 } from 'lucide-react';
 import { useBookmarkStore } from '../store/useBookmarkStore';
 import { useModalStore } from '../store/useModalStore';
-import { getFaviconUrl } from '../utils/favicon';
+import { Favicon } from './Favicon';
 import type { Link as LinkType } from '../types';
-import { useState } from 'react';
 
 interface LinkProps {
   link: LinkType;
@@ -16,8 +15,6 @@ interface LinkProps {
 export const Link = ({ link, slotId, isEditMode }: LinkProps) => {
   const deleteLink = useBookmarkStore((state) => state.deleteLink);
   const { openConfirmModal, openEditLinkModal } = useModalStore();
-  const [faviconUrl] = useState(() => getFaviconUrl(link.url));
-  const [faviconFailed, setFaviconFailed] = useState(false);
 
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
     id: link.id,
@@ -37,23 +34,10 @@ export const Link = ({ link, slotId, isEditMode }: LinkProps) => {
     openEditLinkModal(slotId, link.id, link.title, link.url, link.description, link.tags);
   };
 
-  const handleFaviconError = () => {
-    setFaviconFailed(true);
-  };
-
   const content = (
     <>
       <div className="w-6 h-6 flex items-center justify-center">
-        {faviconFailed || !faviconUrl ? (
-          <Globe className="w-4 h-4 text-icon-placeholder" />
-        ) : (
-          <img
-            src={faviconUrl}
-            alt=""
-            className="w-4 h-4"
-            onError={handleFaviconError}
-          />
-        )}
+        <Favicon url={link.url} />
       </div>
       <div className="flex-1 min-w-0 flex items-center gap-normal">
         <span className="text-value text-text-primary truncate transition-colors group-hover/link:text-interactive-primary">

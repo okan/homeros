@@ -3,27 +3,44 @@ import type { MutableRefObject } from 'react';
 
 const SAVE_DEBOUNCE_MS = 300;
 
+type StorageWrite = (payload: Record<string, unknown>) => Promise<void>;
+
+const writeToLocalStorage: StorageWrite = (payload) => chrome.storage.local.set(payload);
+
 interface SaveOptions {
   payload: Record<string, unknown>;
   skipRef: MutableRefObject<boolean>;
+  write?: StorageWrite;
   onSaveError?: (error: unknown) => void;
 }
 
-export const useDebouncedStorageSave = ({ payload, skipRef, onSaveError }: SaveOptions) => {
+export const useDebouncedStorageSave = ({
+  payload,
+  skipRef,
+  write = writeToLocalStorage,
+  onSaveError,
+}: SaveOptions) => {
   const timeoutRef = useRef<number>();
   const pendingRef = useRef<Record<string, unknown> | null>(null);
+  const writeRef = useRef(write);
+  writeRef.current = write;
   const onSaveErrorRef = useRef(onSaveError);
   onSaveErrorRef.current = onSaveError;
 
   useEffect(() => {
-    if (skipRef.current) return;
+    window.clearTimeout(timeoutRef.current);
+
+    // A skipped payload supersedes any older one still waiting, so drop that too
+    if (skipRef.current) {
+      pendingRef.current = null;
+      return;
+    }
 
     pendingRef.current = payload;
-    window.clearTimeout(timeoutRef.current);
     timeoutRef.current = window.setTimeout(async () => {
       pendingRef.current = null;
       try {
-        await chrome.storage.local.set(payload);
+        await writeRef.current(payload);
       } catch (error) {
         console.error('Failed to save to Chrome storage:', error);
         onSaveErrorRef.current?.(error);
@@ -37,7 +54,7 @@ export const useDebouncedStorageSave = ({ payload, skipRef, onSaveError }: SaveO
       window.clearTimeout(timeoutRef.current);
       const data = pendingRef.current;
       pendingRef.current = null;
-      chrome.storage.local.set(data).catch((error) => {
+      writeRef.current(data).catch((error) => {
         console.error('Failed to save to Chrome storage:', error);
         onSaveErrorRef.current?.(error);
       });

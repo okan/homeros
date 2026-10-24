@@ -23,7 +23,7 @@ export const Toolbar = ({ onOpenSearch, onOpenSettings, onOpenSnippetManager }: 
     'flex items-center gap-fine px-[10px] py-2 rounded-control transition-all bg-transparent text-text-secondary hover:bg-bg-content hover:text-interactive-primary';
 
   return (
-    <div className="fixed top-coarse right-coarse z-50 flex items-center gap-fine">
+    <div role="toolbar" aria-label="Toolbar" className="flex items-center gap-fine">
       {!isEditMode && (
         <>
           {visibleButtons.search && (

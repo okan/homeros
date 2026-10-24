@@ -5,7 +5,7 @@ test.describe('App', () => {
     await page.goto('/');
 
     await expect(page.locator('#main-content')).toBeVisible();
-    const toolbar = page.locator('.fixed.top-coarse');
+    const toolbar = page.getByRole('toolbar', { name: 'Toolbar' });
     await expect(toolbar.getByText('Edit')).toBeVisible();
   });
 

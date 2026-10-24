@@ -4,7 +4,7 @@ const todoPanel = (page: import('@playwright/test').Page) =>
   page.locator('.fixed.top-0.right-0.h-full');
 
 const toolbar = (page: import('@playwright/test').Page) =>
-  page.locator('.fixed.top-coarse');
+  page.getByRole('toolbar', { name: 'Toolbar' });
 
 test.describe('Keyboard Shortcuts', () => {
   test.beforeEach(async ({ page }) => {
