@@ -19,6 +19,7 @@
 ## Features
 
 - **Slot-based bookmarks** — Group links into customizable slots with icons. Add titles, descriptions, and tags to each link.
+- **Save from anywhere** — Save the page you're on with the Homeros toolbar button or the right-click menu. It waits in the inbox under the toolbar until you move it into a slot.
 - **Drag & drop** — Reorder slots and links freely with smooth drag-and-drop powered by dnd-kit.
 - **Quick search** — Press `⌘K` to instantly find bookmarks and snippets. Navigate results with keyboard.
 - **Todo panel** — Slide-out task list with deadline tracking and visual urgency indicators. Open with `⌘T`.
@@ -26,7 +27,7 @@
 - **Text snippets** — Store frequently used texts and copy them instantly from search or the snippet manager.
 - **Preset themes** — Pick from 7 full color themes (Stone, Midnight, Ocean, Forest, Rose, Amethyst, Sepia) in settings.
 - **Customizable toolbar** — Show toolbar buttons as icon-only or icon + text, and choose which buttons appear.
-- **Data export & import** — Back up everything to JSON. Restore with replace or merge modes.
+- **Data export & import** — Back up your bookmarks, todos, and habits to JSON. Restore with replace or merge modes.
 - **Keyboard shortcuts** — `⌘K` search, `⌘E` edit mode, `⌘T` todo panel, `Esc` to dismiss.
 
 ## Tech Stack
