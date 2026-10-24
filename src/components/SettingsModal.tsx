@@ -368,6 +368,11 @@ export const SettingsModal = ({ isOpen, onClose, onOpenSnippetManager }: Setting
                       Current data: {slots.length} slots, {todos.length} todos, {habits.length}{' '}
                       habits
                     </p>
+                    {settings.enabled && (
+                      <p className="text-xs text-text-placeholder mt-1">
+                        Snippets are not included in backups.
+                      </p>
+                    )}
                   </div>
                 </div>
               )}

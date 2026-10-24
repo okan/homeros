@@ -94,6 +94,33 @@ test.describe('Settings', () => {
     await expect(page.getByText(/Current data:/)).toBeVisible();
   });
 
+  test('hides snippet backup note when snippets are disabled', async ({ page }) => {
+    await page.goto('/');
+
+    await page.getByTitle('Settings').click();
+    await page.getByRole('tab', { name: 'Data' }).click();
+
+    await expect(page.getByText('Snippets are not included in backups.')).not.toBeVisible();
+  });
+
+  test.describe('with snippets enabled', () => {
+    test.use({
+      storageOverride: {
+        homeros_onboarding_completed: true,
+        homeros_snippet_settings: { enabled: true },
+      },
+    });
+
+    test('shows snippet backup note', async ({ page }) => {
+      await page.goto('/');
+
+      await page.getByTitle('Settings').click();
+      await page.getByRole('tab', { name: 'Data' }).click();
+
+      await expect(page.getByText('Snippets are not included in backups.')).toBeVisible();
+    });
+  });
+
   test('shows export button', async ({ page }) => {
     await page.goto('/');
 
