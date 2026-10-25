@@ -9,6 +9,12 @@
 </p>
 
 <p align="center">
+  <a href="https://chromewebstore.google.com/detail/homeros/pkgimndgdmjejnpbocnclcmhnmljolbb">
+    <img src=".github/assets/chrome-web-store-badge.png" alt="Available in the Chrome Web Store" width="206" />
+  </a>
+</p>
+
+<p align="center">
   <img src="https://img.shields.io/github/v/tag/okan/homeros?label=version&style=flat-square" alt="Version" />
   <img src="https://img.shields.io/github/actions/workflow/status/okan/homeros/ci.yml?branch=main&style=flat-square&label=CI" alt="CI" />
   <img src="https://img.shields.io/github/license/okan/homeros?style=flat-square" alt="License" />
@@ -29,6 +35,10 @@
 - **Customizable toolbar** — Show toolbar buttons as icon-only or icon + text, and choose which buttons appear.
 - **Data export & import** — Back up your bookmarks, todos, and habits to JSON. Restore with replace or merge modes.
 - **Keyboard shortcuts** — `⌘K` search, `⌘E` edit mode, `⌘T` todo panel, `Esc` to dismiss.
+
+## Install
+
+Add Homeros to Chrome from the [Chrome Web Store](https://chromewebstore.google.com/detail/homeros/pkgimndgdmjejnpbocnclcmhnmljolbb). To build it from source instead, see [Getting Started](#getting-started).
 
 ## Tech Stack
 
